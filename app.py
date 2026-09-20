@@ -118,7 +118,7 @@ def main(page: ft.Page):
 
     user_greeting_txt = ft.Text("Hi User", size=15, weight=ft.FontWeight.BOLD, color="#4F46E5")
 
-    # Front Side: Life Insurance (Icons replaced with strings)
+    # Front Side: Life Insurance
     life_card_content = ft.Column([
         ft.Row([
             ft.Row([
@@ -128,7 +128,7 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
-                padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                padding=4,
                 border_radius=4
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -151,7 +151,7 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Text("NOMINEE PROT", size=9, weight=ft.FontWeight.BOLD, color="#FBBF24"),
                 bgcolor="#451A03",
-                padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                padding=4,
                 border_radius=4
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
@@ -167,7 +167,7 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
-                padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                padding=4,
                 border_radius=4
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -190,7 +190,7 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Text("CASHLESS", size=9, weight=ft.FontWeight.BOLD, color="#065F46"),
                 bgcolor="#D1FAE5",
-                padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                padding=4,
                 border_radius=4
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
@@ -260,7 +260,7 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Text("ACTIVE", size=9, weight=ft.FontWeight.BOLD, color="#059669"),
                     bgcolor="#DEF7EC",
-                    padding=ft.padding.symmetric(horizontal=6, vertical=2),
+                    padding=4,
                     border_radius=4
                 )
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -521,7 +521,7 @@ def main(page: ft.Page):
             ft.TextButton("Profile", icon="person", on_click=lambda _: switch_nav_tab("profile")),
         ], spacing=10, alignment=ft.MainAxisAlignment.START),
         width=115,
-        padding=ft.padding.symmetric(vertical=15, horizontal=4),
+        padding=10,
         bgcolor="#F8FAFC",
         border=ft.border.only(right=ft.BorderSide(1, "#E2E8F0"))
     )
@@ -537,7 +537,7 @@ def main(page: ft.Page):
                 on_click=lambda _: toast("Helpline: 1800-MAGADHA")
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-        padding=ft.padding.only(left=12, right=12, top=40, bottom=10),
+        padding=10,
         bgcolor="white",
         border=ft.border.only(bottom=ft.BorderSide(1, "#E2E8F0"))
     )
@@ -607,10 +607,10 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     # SCREEN 2: OTP SCREEN
     # ----------------------------------------------------
-    t1 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0), autofocus=True)
-    t2 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0))
-    t3 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0))
-    t4 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0))
+    t1 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0, autofocus=True)
+    t2 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t3 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t4 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
 
     boxes_row = ft.Container(
         content=ft.Row([t1, t2, t3, t4], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
