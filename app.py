@@ -116,20 +116,17 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    # ----------------------------------------------------
-    # SCREEN 4: MAIN DASHBOARD & TABS
-    # ----------------------------------------------------
     user_greeting_txt = ft.Text("Hi User", size=15, weight=ft.FontWeight.BOLD, color="#4F46E5")
 
-    # Front Side: Life Insurance (Using standard universal icons)
+    # Front Side: Life Insurance (Icons replaced with strings)
     life_card_content = ft.Column([
         ft.Row([
             ft.Row([
-                ft.Icon(ft.icons.SHIELD, color="#FBBF24", size=18),
+                ft.Icon("shield", color="#FBBF24", size=18),
                 ft.Text("LIFE INSURANCE PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=ft.padding.symmetric(horizontal=6, vertical=2),
                 border_radius=4
@@ -138,7 +135,7 @@ def main(page: ft.Page):
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#F59E0B", border_radius=4),
-            ft.Icon(ft.icons.CONTACTLESS, color="white70", size=18)
+            ft.Icon("contactless", color="white70", size=18)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Container(height=4),
         ft.Text("5412  8801  9924  7710", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
@@ -160,15 +157,15 @@ def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
     ], spacing=3)
 
-    # Back Side: Health Insurance (Using standard universal icons)
+    # Back Side: Health Insurance
     health_card_content = ft.Column([
         ft.Row([
             ft.Row([
-                ft.Icon(ft.icons.LOCAL_HOSPITAL, color="#34D399", size=18),
+                ft.Icon("local_hospital", color="#34D399", size=18),
                 ft.Text("HEALTH CASHLESS PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=ft.padding.symmetric(horizontal=6, vertical=2),
                 border_radius=4
@@ -177,7 +174,7 @@ def main(page: ft.Page):
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#10B981", border_radius=4),
-            ft.Icon(ft.icons.WIFI, color="white70", size=18)
+            ft.Icon("wifi", color="white70", size=18)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Container(height=4),
         ft.Text("4532  6612  3341  8821", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
@@ -246,12 +243,12 @@ def main(page: ft.Page):
     virtual_card_container.on_click = trigger_card_flip
 
     amt_label = ft.Text("••••••••", size=17, weight=ft.FontWeight.BOLD, color="#0F172A")
-    eye_btn = ft.IconButton(icon=ft.icons.VISIBILITY_OFF, icon_color="#4F46E5", icon_size=18)
+    eye_btn = ft.IconButton(icon="visibility_off", icon_color="#4F46E5", icon_size=18)
 
     def on_toggle_eye(e):
         eye_open[0] = not eye_open[0]
         amt_label.value = "Rs. 15,00,000" if eye_open[0] else "••••••••"
-        eye_btn.icon = ft.icons.VISIBILITY if eye_open[0] else ft.icons.VISIBILITY_OFF
+        eye_btn.icon = "visibility" if eye_open[0] else "visibility_off"
         page.update()
 
     eye_btn.on_click = on_toggle_eye
@@ -281,7 +278,7 @@ def main(page: ft.Page):
             ft.Text("• Critical Illness (Heart Attack): Rs. 20,00,000", size=10, color="#DC2626", weight=ft.FontWeight.BOLD),
             ft.Container(
                 content=ft.Row([
-                    ft.Icon(ft.icons.ASSIGNMENT_IND, size=13, color="#4F46E5"),
+                    ft.Icon("assignment_ind", size=13, color="#4F46E5"),
                     ft.Text(f"Nominee Guaranteed: {nominee_info[0]} ki matrame settlement cheyabadunu.", size=9, weight=ft.FontWeight.BOLD, color="#4F46E5")
                 ], spacing=4),
                 bgcolor="#EEF2FF",
@@ -348,7 +345,7 @@ def main(page: ft.Page):
     action_buttons = ft.Row([
         ft.ElevatedButton(
             "Life Claim",
-            icon=ft.icons.FAMILY_RESTROOM,
+            icon="family_restroom",
             bgcolor="#4F46E5",
             color="white",
             height=42,
@@ -357,7 +354,7 @@ def main(page: ft.Page):
         ),
         ft.ElevatedButton(
             "Health Claim",
-            icon=ft.icons.LOCAL_HOSPITAL,
+            icon="local_hospital",
             bgcolor="#059669",
             color="white",
             height=42,
@@ -516,12 +513,12 @@ def main(page: ft.Page):
 
     left_vertical_sidebar = ft.Container(
         content=ft.Column([
-            ft.TextButton("Home", icon=ft.icons.HOME, on_click=lambda _: switch_nav_tab("home")),
-            ft.TextButton("Details", icon=ft.icons.BADGE_OUTLINED, on_click=lambda _: switch_nav_tab("policy")),
-            ft.TextButton("History", icon=ft.icons.HISTORY, on_click=lambda _: switch_nav_tab("history")),
-            ft.TextButton("Claims", icon=ft.icons.RECEIPT_LONG, on_click=lambda _: switch_nav_tab("claims")),
-            ft.TextButton("Explore", icon=ft.icons.STOREFRONT, on_click=lambda _: switch_nav_tab("explore")),
-            ft.TextButton("Profile", icon=ft.icons.PERSON, on_click=lambda _: switch_nav_tab("profile")),
+            ft.TextButton("Home", icon="home", on_click=lambda _: switch_nav_tab("home")),
+            ft.TextButton("Details", icon="badge", on_click=lambda _: switch_nav_tab("policy")),
+            ft.TextButton("History", icon="history", on_click=lambda _: switch_nav_tab("history")),
+            ft.TextButton("Claims", icon="receipt_long", on_click=lambda _: switch_nav_tab("claims")),
+            ft.TextButton("Explore", icon="storefront", on_click=lambda _: switch_nav_tab("explore")),
+            ft.TextButton("Profile", icon="person", on_click=lambda _: switch_nav_tab("profile")),
         ], spacing=10, alignment=ft.MainAxisAlignment.START),
         width=115,
         padding=ft.padding.symmetric(vertical=15, horizontal=4),
@@ -536,7 +533,7 @@ def main(page: ft.Page):
                 ft.Text("MAGADHA", size=15, weight=ft.FontWeight.BOLD, color="#0F172A")
             ], spacing=6),
             ft.TextButton(
-                content=ft.Row([ft.Icon(ft.icons.SUPPORT_AGENT, color="#4F46E5", size=16), ft.Text("Help", color="#4F46E5", size=12, weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("support_agent", color="#4F46E5", size=16), ft.Text("Help", color="#4F46E5", size=12, weight=ft.FontWeight.BOLD)], spacing=2),
                 on_click=lambda _: toast("Helpline: 1800-MAGADHA")
             )
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -582,7 +579,7 @@ def main(page: ft.Page):
 
     verify_details_card = ft.Container(
         content=ft.Column([
-            ft.Icon(ft.icons.VERIFIED_USER, size=40, color="#4F46E5"),
+            ft.Icon("verified_user", size=40, color="#4F46E5"),
             ft.Text("Verify Customer Identity", size=18, weight=ft.FontWeight.BOLD, color="#0F172A"),
             ft.Text("Confirm your policy & linked Aadhaar details", size=11, color="#64748B"),
             v_name,
@@ -621,7 +618,7 @@ def main(page: ft.Page):
     )
 
     verified_ring = ft.Container(
-        content=ft.Icon(ft.icons.CHECK, color="white", size=40),
+        content=ft.Icon("check", color="white", size=40),
         width=70,
         height=70,
         border_radius=35,
@@ -763,9 +760,9 @@ def main(page: ft.Page):
         page.dialog = ft.AlertDialog(
             title=ft.Text("App Permissions Required", size=16, weight=ft.FontWeight.BOLD),
             content=ft.Column([
-                ft.ListTile(leading=ft.Icon(ft.icons.CAMERA_ALT, color="#4F46E5"), title=ft.Text("Camera Permission", size=12), subtitle=ft.Text("For instant document & bill scans", size=10)),
-                ft.ListTile(leading=ft.Icon(ft.icons.FOLDER, color="#4F46E5"), title=ft.Text("Storage Permission", size=12), subtitle=ft.Text("For claim invoices & policy docs", size=10)),
-                ft.ListTile(leading=ft.Icon(ft.icons.SMS, color="#4F46E5"), title=ft.Text("SMS Access", size=12), subtitle=ft.Text("For secure instant OTP login", size=10)),
+                ft.ListTile(leading=ft.Icon("camera_alt", color="#4F46E5"), title=ft.Text("Camera Permission", size=12), subtitle=ft.Text("For instant document & bill scans", size=10)),
+                ft.ListTile(leading=ft.Icon("folder", color="#4F46E5"), title=ft.Text("Storage Permission", size=12), subtitle=ft.Text("For claim invoices & policy docs", size=10)),
+                ft.ListTile(leading=ft.Icon("sms", color="#4F46E5"), title=ft.Text("SMS Access", size=12), subtitle=ft.Text("For secure instant OTP login", size=10)),
             ], tight=True),
             actions=[
                 ft.TextButton("Deny", on_click=lambda _: setattr(page.dialog, "open", False) or page.update()),
