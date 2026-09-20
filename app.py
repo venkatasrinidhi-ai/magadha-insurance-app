@@ -94,10 +94,8 @@ init_db()
 
 def main(page: ft.Page):
     page.title = "Magadha Life & Health Insurance"
-    page.theme_mode = ft.ThemeMode.LIGHT
     page.window_width = 440
     page.window_height = 870
-    page.window_resizable = False
     page.padding = 0
     page.bgcolor = "#F8FAFC"
 
@@ -111,50 +109,50 @@ def main(page: ft.Page):
     card_side = ["life"]
 
     def toast(msg, color="#4F46E5"):
-        snack = ft.SnackBar(ft.Text(msg, color="white", weight=ft.FontWeight.BOLD), bgcolor=color)
+        snack = ft.SnackBar(ft.Text(msg, color="white", weight="bold"), bgcolor=color)
         page.overlay.append(snack)
         snack.open = True
         page.update()
 
-    user_greeting_txt = ft.Text("Hi User", size=15, weight=ft.FontWeight.BOLD, color="#4F46E5")
+    user_greeting_txt = ft.Text("Hi User", size=15, weight="bold", color="#4F46E5")
 
     # Front Side: Life Insurance
     life_card_content = ft.Column([
         ft.Row([
             ft.Row([
                 ft.Icon("shield", color="#FBBF24", size=18),
-                ft.Text("LIFE INSURANCE PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
+                ft.Text("LIFE INSURANCE PASS", size=11, weight="bold", color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight="bold")], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=4,
                 border_radius=4
             )
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ], alignment="spaceBetween"),
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#F59E0B", border_radius=4),
             ft.Icon("contactless", color="white70", size=18)
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ], alignment="spaceBetween"),
         ft.Container(height=4),
-        ft.Text("5412  8801  9924  7710", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
+        ft.Text("5412  8801  9924  7710", size=14, weight="bold", color="white", font_family="monospace"),
         ft.Row([
             ft.Column([
                 ft.Text("INSURED MEMBER", size=8, color="#94A3B8"),
-                ft.Text(f"{user_name[0].upper() or 'VALUED CUSTOMER'}", size=11, weight=ft.FontWeight.BOLD, color="white")
+                ft.Text(f"{user_name[0].upper() or 'VALUED CUSTOMER'}", size=11, weight="bold", color="white")
             ], spacing=1),
             ft.Column([
                 ft.Text("COVERAGE", size=8, color="#94A3B8"),
-                ft.Text("Rs. 15 LAKHS", size=11, weight=ft.FontWeight.BOLD, color="#38BDF8")
+                ft.Text("Rs. 15 LAKHS", size=11, weight="bold", color="#38BDF8")
             ], spacing=1),
             ft.Container(
-                content=ft.Text("NOMINEE PROT", size=9, weight=ft.FontWeight.BOLD, color="#FBBF24"),
+                content=ft.Text("NOMINEE PROT", size=9, weight="bold", color="#FBBF24"),
                 bgcolor="#451A03",
                 padding=4,
                 border_radius=4
             )
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        ], alignment="spaceBetween")
     ], spacing=3)
 
     # Back Side: Health Insurance
@@ -162,38 +160,38 @@ def main(page: ft.Page):
         ft.Row([
             ft.Row([
                 ft.Icon("local_hospital", color="#34D399", size=18),
-                ft.Text("HEALTH CASHLESS PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
+                ft.Text("HEALTH CASHLESS PASS", size=11, weight="bold", color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("rotate_right", size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight="bold")], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=4,
                 border_radius=4
             )
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ], alignment="spaceBetween"),
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#10B981", border_radius=4),
             ft.Icon("wifi", color="white70", size=18)
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ], alignment="spaceBetween"),
         ft.Container(height=4),
-        ft.Text("4532  6612  3341  8821", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
+        ft.Text("4532  6612  3341  8821", size=14, weight="bold", color="white", font_family="monospace"),
         ft.Row([
             ft.Column([
                 ft.Text("PRIMARY HOLDER", size=8, color="#A7F3D0"),
-                ft.Text(f"{user_name[0].upper() or 'VALUED CUSTOMER'}", size=11, weight=ft.FontWeight.BOLD, color="white")
+                ft.Text(f"{user_name[0].upper() or 'VALUED CUSTOMER'}", size=11, weight="bold", color="white")
             ], spacing=1),
             ft.Column([
                 ft.Text("FAMILY COVER", size=8, color="#A7F3D0"),
-                ft.Text("4 MEMBERS", size=11, weight=ft.FontWeight.BOLD, color="#FBBF24")
+                ft.Text("4 MEMBERS", size=11, weight="bold", color="#FBBF24")
             ], spacing=1),
             ft.Container(
-                content=ft.Text("CASHLESS", size=9, weight=ft.FontWeight.BOLD, color="#065F46"),
+                content=ft.Text("CASHLESS", size=9, weight="bold", color="#065F46"),
                 bgcolor="#D1FAE5",
                 padding=4,
                 border_radius=4
             )
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+        ], alignment="spaceBetween")
     ], spacing=3)
 
     virtual_card_container = ft.Container(
@@ -202,47 +200,35 @@ def main(page: ft.Page):
         height=165,
         padding=14,
         border_radius=16,
-        gradient=ft.LinearGradient(
-            begin=ft.alignment.top_left,
-            end=ft.alignment.bottom_right,
-            colors=["#0F172A", "#1E293B", "#334155"]
-        ),
+        bgcolor="#1E293B",
         shadow=ft.BoxShadow(blur_radius=12, color="#0F172A25"),
-        animate_rotation=ft.Animation(450, ft.AnimationCurve.EASE_IN_OUT),
-        rotate=ft.transform.Rotate(0)
+        animate_rotation=ft.Animation(450, "easeInOut"),
+        rotate=0
     )
 
     def trigger_card_flip(e):
-        virtual_card_container.rotate = ft.transform.Rotate(math.pi * 0.5)
+        virtual_card_container.rotate = math.pi * 0.5
         page.update()
         time.sleep(0.2)
 
         if card_side[0] == "life":
             card_side[0] = "health"
             virtual_card_container.content = health_card_content
-            virtual_card_container.gradient = ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#064E3B", "#047857", "#059669"]
-            )
+            virtual_card_container.bgcolor = "#064E3B"
         else:
             card_side[0] = "life"
             virtual_card_container.content = life_card_content
-            virtual_card_container.gradient = ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#0F172A", "#1E293B", "#334155"]
-            )
+            virtual_card_container.bgcolor = "#1E293B"
 
-        virtual_card_container.rotate = ft.transform.Rotate(math.pi)
+        virtual_card_container.rotate = math.pi
         page.update()
         time.sleep(0.2)
-        virtual_card_container.rotate = ft.transform.Rotate(0)
+        virtual_card_container.rotate = 0
         page.update()
 
     virtual_card_container.on_click = trigger_card_flip
 
-    amt_label = ft.Text("••••••••", size=17, weight=ft.FontWeight.BOLD, color="#0F172A")
+    amt_label = ft.Text("••••••••", size=17, weight="bold", color="#0F172A")
     eye_btn = ft.IconButton(icon="visibility_off", icon_color="#4F46E5", icon_size=18)
 
     def on_toggle_eye(e):
@@ -256,30 +242,30 @@ def main(page: ft.Page):
     coverage_detail_box = ft.Container(
         content=ft.Column([
             ft.Row([
-                ft.Text("POLICY SCHEDULE OVERVIEW", size=11, weight=ft.FontWeight.BOLD, color="#4F46E5"),
+                ft.Text("POLICY SCHEDULE OVERVIEW", size=11, weight="bold", color="#4F46E5"),
                 ft.Container(
-                    content=ft.Text("ACTIVE", size=9, weight=ft.FontWeight.BOLD, color="#059669"),
+                    content=ft.Text("ACTIVE", size=9, weight="bold", color="#059669"),
                     bgcolor="#DEF7EC",
                     padding=4,
                     border_radius=4
                 )
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            ft.Text(f"user policy no : {current_policy[0]}", size=11, color="#64748B", weight=ft.FontWeight.W_500),
+            ], alignment="spaceBetween"),
+            ft.Text(f"user policy no : {current_policy[0]}", size=11, color="#64748B", weight="w500"),
             ft.Row([
                 ft.Row([ft.Text("claim amount :", size=11, color="#64748B"), amt_label]),
                 eye_btn
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            ], alignment="spaceBetween"),
             ft.Divider(height=4, color="#E2E8F0"),
-            ft.Text("Death Reason Payout Breakdown:", size=10, weight=ft.FontWeight.BOLD, color="#334155"),
+            ft.Text("Death Reason Payout Breakdown:", size=10, weight="bold", color="#334155"),
             ft.Row([
                 ft.Text("• Natural Death: Rs. 15,00,000", size=10, color="#475569"),
-                ft.Text("• Accident: Rs. 30,00,000", size=10, color="#059669", weight=ft.FontWeight.BOLD)
-            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-            ft.Text("• Critical Illness (Heart Attack): Rs. 20,00,000", size=10, color="#DC2626", weight=ft.FontWeight.BOLD),
+                ft.Text("• Accident: Rs. 30,00,000", size=10, color="#059669", weight="bold")
+            ], alignment="spaceBetween"),
+            ft.Text("• Critical Illness (Heart Attack): Rs. 20,00,000", size=10, color="#DC2626", weight="bold"),
             ft.Container(
                 content=ft.Row([
                     ft.Icon("assignment_ind", size=13, color="#4F46E5"),
-                    ft.Text(f"Nominee Guaranteed: {nominee_info[0]} ki matrame settlement cheyabadunu.", size=9, weight=ft.FontWeight.BOLD, color="#4F46E5")
+                    ft.Text(f"Nominee Guaranteed: {nominee_info[0]} ki matrame settlement cheyabadunu.", size=9, weight="bold", color="#4F46E5")
                 ], spacing=4),
                 bgcolor="#EEF2FF",
                 padding=4,
@@ -320,7 +306,7 @@ def main(page: ft.Page):
     claim_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
-                ft.Text("Submit Insurance Claim Ticket", size=15, weight=ft.FontWeight.BOLD),
+                ft.Text("Submit Insurance Claim Ticket", size=15, weight="bold"),
                 claim_type_field,
                 claim_reason,
                 claim_amount,
@@ -368,27 +354,27 @@ def main(page: ft.Page):
         virtual_card_container,
         coverage_detail_box,
         action_buttons,
-        ft.Text("Live fulfilled", size=16, weight=ft.FontWeight.BOLD, color="#1E293B", italic=True, text_align=ft.TextAlign.CENTER),
-        ft.Text("Instant cashless access & Nominee security", size=10, color="#94A3B8", text_align=ft.TextAlign.CENTER)
-    ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=10, scroll=ft.ScrollMode.AUTO)
+        ft.Text("Live fulfilled", size=16, weight="bold", color="#1E293B", italic=True, text_align="center"),
+        ft.Text("Instant cashless access & Nominee security", size=10, color="#94A3B8", text_align="center")
+    ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: User", size=12, weight=ft.FontWeight.BOLD)
+    profile_name_txt = ft.Text("Name: User", size=12, weight="bold")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=11, color="#64748B")
 
     customer_info_view = ft.Column([
-        ft.Text("Customer Policy Schedule", size=14, weight=ft.FontWeight.BOLD, color="#0F172A"),
+        ft.Text("Customer Policy Schedule", size=14, weight="bold", color="#0F172A"),
         ft.Container(
             content=ft.Column([
                 profile_name_txt,
-                ft.Text(f"Policy No: {current_policy[0]}", size=11, color="#4F46E5", weight=ft.FontWeight.BOLD),
+                ft.Text(f"Policy No: {current_policy[0]}", size=11, color="#4F46E5", weight="bold"),
                 ft.Text(f"Aadhaar: {current_aadhaar[0]}", size=11, color="#475569"),
                 profile_mobile_txt,
-                ft.Text(f"Nominee: {nominee_info[0]}", size=11, color="#059669", weight=ft.FontWeight.BOLD),
+                ft.Text(f"Nominee: {nominee_info[0]}", size=11, color="#059669", weight="bold"),
                 ft.Divider(height=1),
-                ft.Text("Plan: Magadha Life & Health Twin Shield", size=11, weight=ft.FontWeight.BOLD),
+                ft.Text("Plan: Magadha Life & Health Twin Shield", size=11, weight="bold"),
                 ft.Text("Reg Date: 2025-01-15", size=11, color="#64748B"),
                 ft.Text("Valid Upto: 2027-01-14", size=11, color="#64748B"),
-                ft.Text("Monthly Premium: Rs. 1,250", size=11, color="#059669", weight=ft.FontWeight.BOLD)
+                ft.Text("Monthly Premium: Rs. 1,250", size=11, color="#059669", weight="bold")
             ], spacing=4),
             padding=10,
             bgcolor="#F8FAFC",
@@ -410,14 +396,14 @@ def main(page: ft.Page):
             ft.Container(
                 content=ft.Row([
                     ft.Column([
-                        ft.Text(f"{p[1]} ({p[0]})", size=11, weight=ft.FontWeight.BOLD, color="#0F172A"),
+                        ft.Text(f"{p[1]} ({p[0]})", size=11, weight="bold", color="#0F172A"),
                         ft.Text(f"Date: {p[2]}", size=10, color="#64748B")
                     ], spacing=1),
                     ft.Column([
-                        ft.Text(p[3], size=11, weight=ft.FontWeight.BOLD, color="#059669"),
-                        ft.Text(p[4], size=10, color="#4F46E5", weight=ft.FontWeight.BOLD)
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, spacing=1)
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                        ft.Text(p[3], size=11, weight="bold", color="#059669"),
+                        ft.Text(p[4], size=10, color="#4F46E5", weight="bold")
+                    ], alignment="spaceBetween", spacing=1)
+                ], alignment="spaceBetween"),
                 padding=8,
                 bgcolor="#F8FAFC",
                 border_radius=8,
@@ -426,7 +412,7 @@ def main(page: ft.Page):
         )
 
     history_view = ft.Column([
-        ft.Text(f"Payment History ({len(pay_history)} Months Paid)", size=13, weight=ft.FontWeight.BOLD),
+        ft.Text(f"Payment History ({len(pay_history)} Months Paid)", size=13, weight="bold"),
         history_items
     ], spacing=6)
 
@@ -442,14 +428,14 @@ def main(page: ft.Page):
                 ft.Container(
                     content=ft.Column([
                         ft.Row([
-                            ft.Text(f"{clm[0]} ({clm[2]})", weight=ft.FontWeight.BOLD, color="#4F46E5", size=12),
-                            ft.Text(clm[5], weight=ft.FontWeight.BOLD, color="#059669" if clm[5] == "Approved" else "#D97706", size=11)
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Text(f"{clm[0]} ({clm[2]})", weight="bold", color="#4F46E5", size=12),
+                            ft.Text(clm[5], weight="bold", color="#059669" if clm[5] == "Approved" else "#D97706", size=11)
+                        ], alignment="spaceBetween"),
                         ft.Text(clm[3], size=11, color="#1E293B"),
                         ft.Row([
                             ft.Text(f"Policy: {clm[1]}", size=10, color="#64748B"),
-                            ft.Text(clm[4], weight=ft.FontWeight.BOLD, color="#0F172A", size=11)
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+                            ft.Text(clm[4], weight="bold", color="#0F172A", size=11)
+                        ], alignment="spaceBetween")
                     ], spacing=2),
                     bgcolor="#F8FAFC",
                     padding=8,
@@ -462,15 +448,15 @@ def main(page: ft.Page):
     reload_claims()
 
     claims_view = ft.Column([
-        ft.Text("Track Claims", weight=ft.FontWeight.BOLD, size=13),
+        ft.Text("Track Claims", weight="bold", size=13),
         claims_col
     ], spacing=8, scroll=ft.ScrollMode.AUTO)
 
     explore_view = ft.Column([
-        ft.Text("Available Plans", size=13, weight=ft.FontWeight.BOLD),
+        ft.Text("Available Plans", size=13, weight="bold"),
         ft.Container(
             content=ft.Column([
-                ft.Text("Magadha Critical Heart & Stroke Shield", weight=ft.FontWeight.BOLD, size=12),
+                ft.Text("Magadha Critical Heart & Stroke Shield", weight="bold", size=12),
                 ft.Text("Rs. 25 Lakhs • Rs. 1,850/mo", color="#4F46E5", size=11),
                 ft.ElevatedButton("Enroll Plan", bgcolor="#4F46E5", color="white", width=180, height=35, on_click=lambda _: toast("Policy Enrolled!"))
             ], spacing=4),
@@ -481,11 +467,11 @@ def main(page: ft.Page):
         )
     ], spacing=8)
 
-    profile_card_name = ft.Text("Name: User", size=12, weight=ft.FontWeight.BOLD)
+    profile_card_name = ft.Text("Name: User", size=12, weight="bold")
     profile_card_mobile = ft.Text("Mobile: +91 ", size=11, color="#64748B")
 
     profile_view = ft.Column([
-        ft.Text("Customer Profile", size=13, weight=ft.FontWeight.BOLD),
+        ft.Text("Customer Profile", size=13, weight="bold"),
         profile_card_name,
         profile_card_mobile,
         ft.Text(f"Aadhaar: {current_aadhaar[0]}", size=11, color="#64748B"),
@@ -519,7 +505,7 @@ def main(page: ft.Page):
             ft.TextButton("Claims", icon="receipt_long", on_click=lambda _: switch_nav_tab("claims")),
             ft.TextButton("Explore", icon="storefront", on_click=lambda _: switch_nav_tab("explore")),
             ft.TextButton("Profile", icon="person", on_click=lambda _: switch_nav_tab("profile")),
-        ], spacing=10, alignment=ft.MainAxisAlignment.START),
+        ], spacing=10, alignment="start"),
         width=115,
         padding=10,
         bgcolor="#F8FAFC",
@@ -529,14 +515,14 @@ def main(page: ft.Page):
     top_bar = ft.Container(
         content=ft.Row([
             ft.Row([
-                ft.Container(content=ft.Text("M", size=16, weight=ft.FontWeight.BOLD, color="white"), width=32, height=32, bgcolor="#4F46E5", border_radius=6, alignment=ft.alignment.center),
-                ft.Text("MAGADHA", size=15, weight=ft.FontWeight.BOLD, color="#0F172A")
+                ft.Container(content=ft.Text("M", size=16, weight="bold", color="white"), width=32, height=32, bgcolor="#4F46E5", border_radius=6, alignment=ft.Alignment(0, 0)),
+                ft.Text("MAGADHA", size=15, weight="bold", color="#0F172A")
             ], spacing=6),
             ft.TextButton(
-                content=ft.Row([ft.Icon("support_agent", color="#4F46E5", size=16), ft.Text("Help", color="#4F46E5", size=12, weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon("support_agent", color="#4F46E5", size=16), ft.Text("Help", color="#4F46E5", size=12, weight="bold")], spacing=2),
                 on_click=lambda _: toast("Helpline: 1800-MAGADHA")
             )
-        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+        ], alignment="spaceBetween"),
         padding=10,
         bgcolor="white",
         border=ft.border.only(bottom=ft.BorderSide(1, "#E2E8F0"))
@@ -580,7 +566,7 @@ def main(page: ft.Page):
     verify_details_card = ft.Container(
         content=ft.Column([
             ft.Icon("verified_user", size=40, color="#4F46E5"),
-            ft.Text("Verify Customer Identity", size=18, weight=ft.FontWeight.BOLD, color="#0F172A"),
+            ft.Text("Verify Customer Identity", size=18, weight="bold", color="#0F172A"),
             ft.Text("Confirm your policy & linked Aadhaar details", size=11, color="#64748B"),
             v_name,
             v_policy,
@@ -588,7 +574,7 @@ def main(page: ft.Page):
             v_aadhaar,
             ft.Container(height=5),
             ft.ElevatedButton("Verify & Unlock Portal", width=310, height=45, bgcolor="#4F46E5", color="white", on_click=on_confirm_verify_details)
-        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=10),
+        ], alignment="center", horizontal_alignment="center", spacing=10),
         padding=25,
         border_radius=20,
         border=ft.border.all(1, "#E2E8F0"),
@@ -599,7 +585,7 @@ def main(page: ft.Page):
 
     verify_details_screen = ft.Container(
         content=verify_details_card,
-        alignment=ft.alignment.center,
+        alignment=ft.Alignment(0, 0),
         expand=True,
         visible=False
     )
@@ -607,14 +593,14 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     # SCREEN 2: OTP SCREEN
     # ----------------------------------------------------
-    t1 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0, autofocus=True)
-    t2 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
-    t3 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
-    t4 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t1 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0, autofocus=True)
+    t2 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t3 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t4 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
 
     boxes_row = ft.Container(
-        content=ft.Row([t1, t2, t3, t4], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
-        alignment=ft.alignment.center
+        content=ft.Row([t1, t2, t3, t4], alignment="center", spacing=10),
+        alignment=ft.Alignment(0, 0)
     )
 
     verified_ring = ft.Container(
@@ -623,23 +609,23 @@ def main(page: ft.Page):
         height=70,
         border_radius=35,
         bgcolor="#059669",
-        alignment=ft.alignment.center,
-        scale=ft.transform.Scale(0.1),
+        alignment=ft.Alignment(0, 0),
+        scale=0.1,
         opacity=0.0,
         shadow=ft.BoxShadow(blur_radius=20, color="#05966980"),
-        animate_scale=ft.Animation(600, ft.AnimationCurve.ELASTIC_OUT),
-        animate_opacity=ft.Animation(300, ft.AnimationCurve.EASE_IN)
+        animate_scale=ft.Animation(600, "elasticOut"),
+        animate_opacity=ft.Animation(300, "easeIn")
     )
 
-    otp_status_lbl = ft.Text("Enter 4-digit code sent to mobile\n(Demo OTP: 1234)", size=12, color="#64748B", text_align=ft.TextAlign.CENTER)
+    otp_status_lbl = ft.Text("Enter 4-digit code sent to mobile\n(Demo OTP: 1234)", size=12, color="#64748B", text_align="center")
 
     def run_tick_animation_and_enter():
         boxes_row.visible = False
         verified_ring.opacity = 1.0
-        verified_ring.scale = ft.transform.Scale(1.2)
+        verified_ring.scale = 1.2
         otp_status_lbl.value = "Verified! Confirm Identity."
         otp_status_lbl.color = "#059669"
-        otp_status_lbl.weight = ft.FontWeight.BOLD
+        otp_status_lbl.weight = "bold"
         page.update()
 
         def proceed_after_delay():
@@ -681,17 +667,17 @@ def main(page: ft.Page):
 
     otp_card = ft.Container(
         content=ft.Column([
-            ft.Text("OTP Verification", size=22, weight=ft.FontWeight.BOLD, color="#0F172A"),
+            ft.Text("OTP Verification", size=22, weight="bold", color="#0F172A"),
             otp_status_lbl,
             ft.Container(height=18),
             ft.Stack([
                 boxes_row,
-                ft.Container(content=verified_ring, alignment=ft.alignment.center, height=70)
-            ], alignment=ft.alignment.center),
+                ft.Container(content=verified_ring, alignment=ft.Alignment(0, 0), height=70)
+            ], alignment=ft.Alignment(0, 0)),
             ft.Container(height=25),
             ft.ElevatedButton("Verify & Proceed", width=280, height=48, bgcolor="#4F46E5", color="white", on_click=on_verify_btn),
             ft.TextButton("Change Details", on_click=lambda _: switch_screen("login"))
-        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=14),
+        ], alignment="center", horizontal_alignment="center", spacing=14),
         bgcolor="white",
         padding=30,
         border_radius=20,
@@ -702,7 +688,7 @@ def main(page: ft.Page):
 
     otp_screen = ft.Container(
         content=otp_card,
-        alignment=ft.alignment.center,
+        alignment=ft.Alignment(0, 0),
         expand=True,
         visible=False
     )
@@ -758,7 +744,7 @@ def main(page: ft.Page):
             page.update()
 
         page.dialog = ft.AlertDialog(
-            title=ft.Text("App Permissions Required", size=16, weight=ft.FontWeight.BOLD),
+            title=ft.Text("App Permissions Required", size=16, weight="bold"),
             content=ft.Column([
                 ft.ListTile(leading=ft.Icon("camera_alt", color="#4F46E5"), title=ft.Text("Camera Permission", size=12), subtitle=ft.Text("For instant document & bill scans", size=10)),
                 ft.ListTile(leading=ft.Icon("folder", color="#4F46E5"), title=ft.Text("Storage Permission", size=12), subtitle=ft.Text("For claim invoices & policy docs", size=10)),
@@ -788,14 +774,14 @@ def main(page: ft.Page):
     login_card = ft.Container(
         content=ft.Column([
             ft.Container(
-                content=ft.Text("M", size=36, weight=ft.FontWeight.BOLD, color="white"),
+                content=ft.Text("M", size=36, weight="bold", color="white"),
                 width=75,
                 height=75,
                 bgcolor="#4F46E5",
                 border_radius=18,
-                alignment=ft.alignment.center
+                alignment=ft.Alignment(0, 0)
             ),
-            ft.Text("MAGADHA", size=24, weight=ft.FontWeight.BOLD, color="#0F172A"),
+            ft.Text("MAGADHA", size=24, weight="bold", color="#0F172A"),
             ft.Text("Life & Health Insurance Portal", size=13, color="#64748B"),
             ft.Container(height=5),
             ft.Row([title_dropdown, name_field], width=310, spacing=10),
@@ -808,7 +794,7 @@ def main(page: ft.Page):
                 color="white",
                 on_click=on_get_otp_click
             )
-        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=14),
+        ], alignment="center", horizontal_alignment="center", spacing=14),
         padding=30,
         border_radius=20,
         border=ft.border.all(1, "#E2E8F0"),
@@ -819,7 +805,7 @@ def main(page: ft.Page):
 
     login_screen = ft.Container(
         content=login_card,
-        alignment=ft.alignment.center,
+        alignment=ft.Alignment(0, 0),
         expand=True,
         visible=False
     )
@@ -827,24 +813,24 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     # SCREEN 0: "M" LOGO ZOOM ANIMATION
     # ----------------------------------------------------
-    m_char = ft.Text("M", size=60, weight=ft.FontWeight.BOLD, color="white")
+    m_char = ft.Text("M", size=60, weight="bold", color="white")
     m_zoom_box = ft.Container(
         content=m_char,
         width=100,
         height=100,
         bgcolor="#4F46E5",
         border_radius=25,
-        alignment=ft.alignment.center,
-        animate=ft.Animation(800, ft.AnimationCurve.EASE_IN_CUBIC),
-        animate_opacity=ft.Animation(600, ft.AnimationCurve.EASE_IN)
+        alignment=ft.Alignment(0, 0),
+        animate=ft.Animation(800, "easeInCubic"),
+        animate_opacity=ft.Animation(600, "easeIn")
     )
 
     splash_screen = ft.Container(
         content=ft.Column([
             m_zoom_box,
-            ft.Text("MAGADHA INSURANCE", size=20, weight=ft.FontWeight.BOLD, color="#0F172A")
-        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=15),
-        alignment=ft.alignment.center,
+            ft.Text("MAGADHA INSURANCE", size=20, weight="bold", color="#0F172A")
+        ], alignment="center", horizontal_alignment="center", spacing=15),
+        alignment=ft.Alignment(0, 0),
         expand=True,
         visible=True
     )
@@ -874,7 +860,7 @@ def main(page: ft.Page):
             t4.value = ""
             boxes_row.visible = True
             verified_ring.opacity = 0.0
-            verified_ring.scale = ft.transform.Scale(0.1)
+            verified_ring.scale = 0.1
             t1.focus()
             
         page.update()
