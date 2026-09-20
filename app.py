@@ -1,4 +1,5 @@
 import flet as ft
+import flet.fastapi as flet_fastapi
 import sqlite3
 import datetime
 import threading
@@ -877,9 +878,10 @@ def main(page: ft.Page):
 
     threading.Thread(target=run_splash_zoom, daemon=True).start()
 
+# Render ASGI Web Server Mount (Prevents WebSocket Receive loop error)
+app = flet_fastapi.app(main)
+
 if __name__ == "__main__":
+    import uvicorn
     port = int(os.environ.get("PORT", 8080))
-    if hasattr(ft, "run"):
-        ft.run(main, view=ft.AppView.WEB_BROWSER, port=port, host="0.0.0.0")
-    else:
-        ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=port, host="0.0.0.0")
+    uvicorn.run(app, host="0.0.0.0", port=port)
