@@ -592,12 +592,12 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN
+    # SCREEN 2: OTP SCREEN (Cleaned counter parameter)
     # ----------------------------------------------------
-    t1 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0, autofocus=True)
-    t2 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
-    t3 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
-    t4 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t1 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0, autofocus=True)
+    t2 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t3 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
+    t4 = ft.TextField(width=50, height=52, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=0)
 
     boxes_row = ft.Container(
         content=ft.Row([t1, t2, t3, t4], alignment="center", spacing=10),
@@ -878,7 +878,7 @@ def main(page: ft.Page):
 
     threading.Thread(target=run_splash_zoom, daemon=True).start()
 
-# Render ASGI Web Server Mount (Prevents WebSocket Receive loop error)
+# Render ASGI Web Server Mount
 app = flet_fastapi.app(main)
 
 if __name__ == "__main__":
