@@ -544,7 +544,6 @@ def main(page: ft.Page):
     v_name = ft.TextField(label="Customer Full Name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     v_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2024-88", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     
-    # Linked Mobile Box with super clear dark prefix & dark text
     v_mobile = ft.TextField(
         label="Linked Mobile Number",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -604,7 +603,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN (0/1 counter completely gone)
+    # SCREEN 2: OTP SCREEN (Clean boxes without counter)
     # ----------------------------------------------------
     def create_otp_box():
         tf = ft.TextField(
@@ -767,7 +766,6 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    # Clean Dark Prefix (+91)
     phone_box = ft.TextField(
         label="Mobile Number",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -782,6 +780,7 @@ def main(page: ft.Page):
         border_radius=12
     )
 
+    # Permissions Modal - Super Crisp Dark Text Configuration
     def show_permissions_and_proceed(m_val, n_val, s_val):
         def on_grant_permissions(e):
             page.dialog.open = False
@@ -796,15 +795,35 @@ def main(page: ft.Page):
             page.update()
 
         page.dialog = ft.AlertDialog(
-            title=ft.Text("App Permissions Required", size=16, weight="bold", color="#0F172A"),
+            title=ft.Text("App Permissions Required", size=18, weight="bold", color="#0F172A"),
             content=ft.Column([
-                ft.ListTile(leading=ft.Icon("camera_alt", color="#1E1B4B"), title=ft.Text("Camera Permission", size=12, weight="bold", color="#0F172A"), subtitle=ft.Text("For instant document & bill scans", size=11, color="#334155")),
-                ft.ListTile(leading=ft.Icon("folder", color="#1E1B4B"), title=ft.Text("Storage Permission", size=12, weight="bold", color="#0F172A"), subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#334155")),
-                ft.ListTile(leading=ft.Icon("sms", color="#1E1B4B"), title=ft.Text("SMS Access", size=12, weight="bold", color="#0F172A"), subtitle=ft.Text("For secure instant OTP login", size=11, color="#334155")),
-            ], tight=True),
+                ft.ListTile(
+                    leading=ft.Icon("camera_alt", color="#1E1B4B", size=24),
+                    title=ft.Text("Camera Permission", size=13, weight="bold", color="#0F172A"),
+                    subtitle=ft.Text("For instant document & bill scans", size=11, color="#0F172A", weight="w500")
+                ),
+                ft.ListTile(
+                    leading=ft.Icon("folder", color="#1E1B4B", size=24),
+                    title=ft.Text("Storage Permission", size=13, weight="bold", color="#0F172A"),
+                    subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#0F172A", weight="w500")
+                ),
+                ft.ListTile(
+                    leading=ft.Icon("sms", color="#1E1B4B", size=24),
+                    title=ft.Text("SMS Access", size=13, weight="bold", color="#0F172A"),
+                    subtitle=ft.Text("For secure instant OTP login", size=11, color="#0F172A", weight="w500")
+                ),
+            ], tight=True, spacing=2),
             actions=[
-                ft.TextButton("Deny", on_click=lambda _: setattr(page.dialog, "open", False) or page.update()),
-                ft.ElevatedButton("Allow & Continue", bgcolor="#1E1B4B", color="white", on_click=on_grant_permissions)
+                ft.TextButton(
+                    content=ft.Text("Deny", size=13, weight="bold", color="#0F172A"),
+                    on_click=lambda _: setattr(page.dialog, "open", False) or page.update()
+                ),
+                ft.ElevatedButton(
+                    "Allow & Continue",
+                    bgcolor="#1E1B4B",
+                    color="white",
+                    on_click=on_grant_permissions
+                )
             ]
         )
         page.dialog.open = True
