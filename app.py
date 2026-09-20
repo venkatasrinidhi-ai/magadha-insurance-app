@@ -4,6 +4,7 @@ import datetime
 import threading
 import time
 import math
+import os
 
 DB_FILE = "magadha_insurance.db"
 
@@ -120,7 +121,7 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     user_greeting_txt = ft.Text("Hi User", size=15, weight=ft.FontWeight.BOLD, color="#4F46E5")
 
-    # Card Side 1: Life Insurance
+    # Front Side: Life Insurance
     life_card_content = ft.Column([
         ft.Row([
             ft.Row([
@@ -159,7 +160,7 @@ def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
     ], spacing=3)
 
-    # Card Side 2: Health Insurance
+    # Back Side: Health Insurance
     health_card_content = ft.Column([
         ft.Row([
             ft.Row([
@@ -300,7 +301,7 @@ def main(page: ft.Page):
         options=[ft.dropdown.Option("Life Insurance"), ft.dropdown.Option("Health Insurance")],
         bgcolor="white"
     )
-    claim_reason = ft.TextField(label="Incident Description", hint_text="e.g. Heart Attack, Accident or Hospital Bill", bgcolor="white")
+    claim_reason = ft.TextField(label="Incident Description", hint_text="e.g. Heart Attack, Hospital Bill", bgcolor="white")
     claim_amount = ft.TextField(label="Claim Amount (Rs)", keyboard_type=ft.KeyboardType.NUMBER, bgcolor="white")
 
     def on_submit_claim(e):
@@ -894,7 +895,8 @@ def main(page: ft.Page):
     threading.Thread(target=run_splash_zoom, daemon=True).start()
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
     if hasattr(ft, "run"):
-        ft.run(main)
+        ft.run(main, view=ft.AppView.WEB_BROWSER, port=port, host="0.0.0.0")
     else:
-        ft.app(target=main)
+        ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=port, host="0.0.0.0")
