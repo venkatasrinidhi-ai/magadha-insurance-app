@@ -121,15 +121,15 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     user_greeting_txt = ft.Text("Hi User", size=15, weight=ft.FontWeight.BOLD, color="#4F46E5")
 
-    # Front Side: Life Insurance
+    # Front Side: Life Insurance (Using standard universal icons)
     life_card_content = ft.Column([
         ft.Row([
             ft.Row([
-                ft.Icon(ft.icons.SHIELD_ROUNDED, color="#FBBF24", size=18),
+                ft.Icon(ft.icons.SHIELD, color="#FBBF24", size=18),
                 ft.Text("LIFE INSURANCE PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT_ROUNDED, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=ft.padding.symmetric(horizontal=6, vertical=2),
                 border_radius=4
@@ -138,7 +138,7 @@ def main(page: ft.Page):
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#F59E0B", border_radius=4),
-            ft.Icon(ft.icons.CONTACTLESS_ROUNDED, color="white70", size=18)
+            ft.Icon(ft.icons.CONTACTLESS, color="white70", size=18)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Container(height=4),
         ft.Text("5412  8801  9924  7710", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
@@ -160,15 +160,15 @@ def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
     ], spacing=3)
 
-    # Back Side: Health Insurance
+    # Back Side: Health Insurance (Using standard universal icons)
     health_card_content = ft.Column([
         ft.Row([
             ft.Row([
-                ft.Icon(ft.icons.LOCAL_HOSPITAL_ROUNDED, color="#34D399", size=18),
+                ft.Icon(ft.icons.LOCAL_HOSPITAL, color="#34D399", size=18),
                 ft.Text("HEALTH CASHLESS PASS", size=11, weight=ft.FontWeight.BOLD, color="white")
             ], spacing=4),
             ft.Container(
-                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT_ROUNDED, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
+                content=ft.Row([ft.Icon(ft.icons.ROTATE_RIGHT, size=11, color="white70"), ft.Text("Flip Card", size=9, color="white70", weight=ft.FontWeight.BOLD)], spacing=2),
                 bgcolor="#FFFFFF1A",
                 padding=ft.padding.symmetric(horizontal=6, vertical=2),
                 border_radius=4
@@ -177,7 +177,7 @@ def main(page: ft.Page):
         ft.Container(height=2),
         ft.Row([
             ft.Container(width=34, height=22, bgcolor="#10B981", border_radius=4),
-            ft.Icon(ft.icons.WIFI_ROUNDED, color="white70", size=18)
+            ft.Icon(ft.icons.WIFI, color="white70", size=18)
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
         ft.Container(height=4),
         ft.Text("4532  6612  3341  8821", size=14, weight=ft.FontWeight.BOLD, color="white", font_family="monospace"),
@@ -582,7 +582,7 @@ def main(page: ft.Page):
 
     verify_details_card = ft.Container(
         content=ft.Column([
-            ft.Icon(ft.icons.VERIFIED_USER_ROUNDED, size=40, color="#4F46E5"),
+            ft.Icon(ft.icons.VERIFIED_USER, size=40, color="#4F46E5"),
             ft.Text("Verify Customer Identity", size=18, weight=ft.FontWeight.BOLD, color="#0F172A"),
             ft.Text("Confirm your policy & linked Aadhaar details", size=11, color="#64748B"),
             v_name,
@@ -608,7 +608,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN (Clean Alignment & Animated Tick)
+    # SCREEN 2: OTP SCREEN
     # ----------------------------------------------------
     t1 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0), autofocus=True)
     t2 = ft.TextField(width=50, height=52, text_align=ft.TextAlign.CENTER, text_size=20, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter=ft.Container(), border_radius=8, bgcolor="#F8FAFC", border_color="#CBD5E1", content_padding=ft.padding.all(0))
@@ -621,7 +621,7 @@ def main(page: ft.Page):
     )
 
     verified_ring = ft.Container(
-        content=ft.Icon(ft.icons.CHECK_ROUNDED, color="white", size=40),
+        content=ft.Icon(ft.icons.CHECK, color="white", size=40),
         width=70,
         height=70,
         border_radius=35,
@@ -711,7 +711,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN (Clean & Empty Input Fields)
+    # SCREEN 1: LOGIN
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
