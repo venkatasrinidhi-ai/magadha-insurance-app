@@ -780,7 +780,7 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    # Permissions Modal - Super Crisp Dark Text Configuration
+    # Permissions Modal - Clean Balanced Tone (Titles crisp, subtitles soft & gentle)
     def show_permissions_and_proceed(m_val, n_val, s_val):
         def on_grant_permissions(e):
             page.dialog.open = False
@@ -795,27 +795,27 @@ def main(page: ft.Page):
             page.update()
 
         page.dialog = ft.AlertDialog(
-            title=ft.Text("App Permissions Required", size=18, weight="bold", color="#0F172A"),
+            title=ft.Text("App Permissions Required", size=17, weight="bold", color="#0F172A"),
             content=ft.Column([
                 ft.ListTile(
-                    leading=ft.Icon("camera_alt", color="#1E1B4B", size=24),
-                    title=ft.Text("Camera Permission", size=13, weight="bold", color="#0F172A"),
-                    subtitle=ft.Text("For instant document & bill scans", size=11, color="#0F172A", weight="w500")
+                    leading=ft.Icon("camera_alt", color="#3B82F6", size=22),
+                    title=ft.Text("Camera Permission", size=13, weight="w600", color="#1E293B"),
+                    subtitle=ft.Text("For instant document & bill scans", size=11, color="#64748B")
                 ),
                 ft.ListTile(
-                    leading=ft.Icon("folder", color="#1E1B4B", size=24),
-                    title=ft.Text("Storage Permission", size=13, weight="bold", color="#0F172A"),
-                    subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#0F172A", weight="w500")
+                    leading=ft.Icon("folder", color="#3B82F6", size=22),
+                    title=ft.Text("Storage Permission", size=13, weight="w600", color="#1E293B"),
+                    subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#64748B")
                 ),
                 ft.ListTile(
-                    leading=ft.Icon("sms", color="#1E1B4B", size=24),
-                    title=ft.Text("SMS Access", size=13, weight="bold", color="#0F172A"),
-                    subtitle=ft.Text("For secure instant OTP login", size=11, color="#0F172A", weight="w500")
+                    leading=ft.Icon("sms", color="#3B82F6", size=22),
+                    title=ft.Text("SMS Access", size=13, weight="w600", color="#1E293B"),
+                    subtitle=ft.Text("For secure instant OTP login", size=11, color="#64748B")
                 ),
             ], tight=True, spacing=2),
             actions=[
                 ft.TextButton(
-                    content=ft.Text("Deny", size=13, weight="bold", color="#0F172A"),
+                    content=ft.Text("Deny", size=13, color="#64748B"),
                     on_click=lambda _: setattr(page.dialog, "open", False) or page.update()
                 ),
                 ft.ElevatedButton(
