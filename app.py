@@ -361,7 +361,7 @@ def main(page: ft.Page):
     ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
     profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
-    profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#1E293B", weight="bold")
+    profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     customer_info_view = ft.Column([
         ft.Text("Customer Policy Schedule", size=15, weight="bold", color="#0F172A"),
@@ -469,7 +469,7 @@ def main(page: ft.Page):
     ], spacing=8)
 
     profile_card_name = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
-    profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#1E293B", weight="bold")
+    profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     profile_view = ft.Column([
         ft.Text("Customer Profile", size=14, weight="bold", color="#0F172A"),
@@ -541,10 +541,22 @@ def main(page: ft.Page):
     # ----------------------------------------------------
     # SCREEN 3: VERIFY DETAILS FORM (Post-OTP)
     # ----------------------------------------------------
-    v_name = ft.TextField(label="Customer Full Name", bgcolor="#F8FAFC", border_color="#94A3B8", color="#0F172A", width=310)
-    v_policy = ft.TextField(label="Policy Number", value="MAG-IND-2024-88", bgcolor="#F8FAFC", border_color="#94A3B8", color="#0F172A", width=310)
-    v_mobile = ft.TextField(label="Linked Mobile Number", prefix_text="+91 ", keyboard_type=ft.KeyboardType.PHONE, bgcolor="#F8FAFC", border_color="#94A3B8", color="#0F172A", width=310)
-    v_aadhaar = ft.TextField(label="Aadhaar Number", value="XXXX-XXXX-7892", bgcolor="#F8FAFC", border_color="#94A3B8", color="#0F172A", width=310)
+    v_name = ft.TextField(label="Customer Full Name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    v_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2024-88", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    
+    # Linked Mobile Box with super clear dark prefix & dark text
+    v_mobile = ft.TextField(
+        label="Linked Mobile Number",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        prefix=ft.Text("+91 ", size=14, weight="bold", color="#0F172A"),
+        keyboard_type=ft.KeyboardType.PHONE,
+        bgcolor="#F8FAFC",
+        border_color="#475569",
+        color="#0F172A",
+        text_size=14,
+        width=310
+    )
+    v_aadhaar = ft.TextField(label="Aadhaar Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="XXXX-XXXX-7892", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
 
     def on_confirm_verify_details(e):
         if not v_name.value or not v_mobile.value:
@@ -568,7 +580,7 @@ def main(page: ft.Page):
         content=ft.Column([
             ft.Icon("verified_user", size=40, color="#1E1B4B"),
             ft.Text("Verify Customer Identity", size=18, weight="bold", color="#0F172A"),
-            ft.Text("Confirm your policy & linked Aadhaar details", size=12, color="#334155", weight="bold"),
+            ft.Text("Confirm your policy & linked Aadhaar details", size=12, color="#0F172A", weight="bold"),
             v_name,
             v_policy,
             v_mobile,
@@ -592,15 +604,31 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN (0/1 counter completely removed)
+    # SCREEN 2: OTP SCREEN (0/1 counter completely gone)
     # ----------------------------------------------------
-    t1 = ft.TextField(width=52, height=55, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter_text="", border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0, autofocus=True)
-    t2 = ft.TextField(width=52, height=55, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter_text="", border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
-    t3 = ft.TextField(width=52, height=55, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter_text="", border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
-    t4 = ft.TextField(width=52, height=55, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, max_length=1, counter_text="", border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
+    def create_otp_box():
+        tf = ft.TextField(
+            width=52,
+            height=54,
+            text_align="center",
+            text_size=22,
+            keyboard_type=ft.KeyboardType.NUMBER,
+            border_radius=10,
+            bgcolor="#F8FAFC",
+            border_color="#475569",
+            color="#0F172A",
+            content_padding=0
+        )
+        return ft.Container(content=tf, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE), tf
+
+    box1, t1 = create_otp_box()
+    box2, t2 = create_otp_box()
+    box3, t3 = create_otp_box()
+    box4, t4 = create_otp_box()
+    t1.autofocus = True
 
     boxes_row = ft.Container(
-        content=ft.Row([t1, t2, t3, t4], alignment="center", spacing=10),
+        content=ft.Row([box1, box2, box3, box4], alignment="center", spacing=10),
         alignment=ft.Alignment(0, 0)
     )
 
@@ -636,23 +664,37 @@ def main(page: ft.Page):
         threading.Thread(target=proceed_after_delay, daemon=True).start()
 
     def on_t1(e):
+        val = t1.value or ""
+        if len(val) > 1:
+            t1.value = val[-1]
         if t1.value:
             t2.focus()
-            page.update()
+        page.update()
+
     def on_t2(e):
+        val = t2.value or ""
+        if len(val) > 1:
+            t2.value = val[-1]
         if t2.value:
             t3.focus()
-            page.update()
+        page.update()
+
     def on_t3(e):
+        val = t3.value or ""
+        if len(val) > 1:
+            t3.value = val[-1]
         if t3.value:
             t4.focus()
-            page.update()
+        page.update()
+
     def on_t4(e):
-        if t4.value:
-            page.update()
-            otp = f"{t1.value or ''}{t2.value or ''}{t3.value or ''}{t4.value or ''}".strip()
-            if otp == "1234":
-                run_tick_animation_and_enter()
+        val = t4.value or ""
+        if len(val) > 1:
+            t4.value = val[-1]
+        page.update()
+        otp = f"{t1.value or ''}{t2.value or ''}{t3.value or ''}{t4.value or ''}".strip()
+        if otp == "1234":
+            run_tick_animation_and_enter()
 
     t1.on_change = on_t1
     t2.on_change = on_t2
@@ -695,10 +737,11 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN
+    # SCREEN 1: LOGIN (Clear dark "+91" prefix & dark text)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
         width=95,
         options=[
             ft.dropdown.Option("Mr."),
@@ -707,29 +750,34 @@ def main(page: ft.Page):
         ],
         value="Mr.",
         bgcolor="#F8FAFC",
-        border_color="#94A3B8",
+        border_color="#475569",
         color="#0F172A",
         border_radius=12
     )
 
     name_field = ft.TextField(
         label="Full Name",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
         hint_text="e.g. Kiran Kumar",
+        hint_style=ft.TextStyle(color="#64748B"),
         width=205,
         bgcolor="#F8FAFC",
-        border_color="#94A3B8",
+        border_color="#475569",
         color="#0F172A",
         border_radius=12
     )
 
+    # Clean Dark Prefix (+91)
     phone_box = ft.TextField(
         label="Mobile Number",
-        prefix_text="+91 ",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        prefix=ft.Text("+91 ", size=14, weight="bold", color="#0F172A"),
         hint_text="10-digit number",
+        hint_style=ft.TextStyle(color="#64748B"),
         keyboard_type=ft.KeyboardType.PHONE,
         width=310,
         bgcolor="#F8FAFC",
-        border_color="#94A3B8",
+        border_color="#475569",
         color="#0F172A",
         border_radius=12
     )
