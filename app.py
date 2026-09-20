@@ -603,7 +603,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN (Clean boxes without counter)
+    # SCREEN 2: OTP SCREEN
     # ----------------------------------------------------
     def create_otp_box():
         tf = ft.TextField(
@@ -780,7 +780,7 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    # Permissions Modal - Clean Balanced Tone (Titles crisp, subtitles soft & gentle)
+    # Permissions Modal - White text on App Deep Theme Background
     def show_permissions_and_proceed(m_val, n_val, s_val):
         def on_grant_permissions(e):
             page.dialog.open = False
@@ -795,33 +795,43 @@ def main(page: ft.Page):
             page.update()
 
         page.dialog = ft.AlertDialog(
-            title=ft.Text("App Permissions Required", size=17, weight="bold", color="#0F172A"),
-            content=ft.Column([
-                ft.ListTile(
-                    leading=ft.Icon("camera_alt", color="#3B82F6", size=22),
-                    title=ft.Text("Camera Permission", size=13, weight="w600", color="#1E293B"),
-                    subtitle=ft.Text("For instant document & bill scans", size=11, color="#64748B")
-                ),
-                ft.ListTile(
-                    leading=ft.Icon("folder", color="#3B82F6", size=22),
-                    title=ft.Text("Storage Permission", size=13, weight="w600", color="#1E293B"),
-                    subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#64748B")
-                ),
-                ft.ListTile(
-                    leading=ft.Icon("sms", color="#3B82F6", size=22),
-                    title=ft.Text("SMS Access", size=13, weight="w600", color="#1E293B"),
-                    subtitle=ft.Text("For secure instant OTP login", size=11, color="#64748B")
-                ),
-            ], tight=True, spacing=2),
+            bgcolor="#0F172A",  # Sleek dark container background
+            shape=ft.RoundedRectangleBorder(radius=16),
+            title=ft.Row([
+                ft.Icon("security", color="#60A5FA", size=22),
+                ft.Text("App Permissions Required", size=17, weight="bold", color="#FFFFFF")
+            ], spacing=8),
+            content=ft.Container(
+                content=ft.Column([
+                    ft.ListTile(
+                        leading=ft.Icon("camera_alt", color="#60A5FA", size=24),
+                        title=ft.Text("Camera Permission", size=13, weight="bold", color="#FFFFFF"),
+                        subtitle=ft.Text("For instant document & bill scans", size=11, color="#E2E8F0")
+                    ),
+                    ft.ListTile(
+                        leading=ft.Icon("folder", color="#60A5FA", size=24),
+                        title=ft.Text("Storage Permission", size=13, weight="bold", color="#FFFFFF"),
+                        subtitle=ft.Text("For claim invoices & policy docs", size=11, color="#E2E8F0")
+                    ),
+                    ft.ListTile(
+                        leading=ft.Icon("sms", color="#60A5FA", size=24),
+                        title=ft.Text("SMS Access", size=13, weight="bold", color="#FFFFFF"),
+                        subtitle=ft.Text("For secure instant OTP login", size=11, color="#E2E8F0")
+                    ),
+                ], tight=True, spacing=4),
+                width=320,
+                padding=0
+            ),
             actions=[
                 ft.TextButton(
-                    content=ft.Text("Deny", size=13, color="#64748B"),
+                    content=ft.Text("Deny", size=13, weight="bold", color="#94A3B8"),
                     on_click=lambda _: setattr(page.dialog, "open", False) or page.update()
                 ),
                 ft.ElevatedButton(
                     "Allow & Continue",
-                    bgcolor="#1E1B4B",
-                    color="white",
+                    bgcolor="#4F46E5",  # App Primary Indigo theme
+                    color="#FFFFFF",
+                    elevation=3,
                     on_click=on_grant_permissions
                 )
             ]
