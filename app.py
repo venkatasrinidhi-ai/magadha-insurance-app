@@ -58,6 +58,23 @@ def init_db():
         )
     """)
     
+    c.execute("""
+        INSERT OR REPLACE INTO customer_profile VALUES (
+            'MAG-IND-2024-88',
+            'Customer',
+            'Mr.',
+            'XXXX-XXXX-7892',
+            '9876543210',
+            'Magadha Life & Health Twin Shield',
+            '2025-01-15',
+            '2027-01-14',
+            'Rs. 15,00,000',
+            'Rs. 1,250',
+            'Nominee',
+            'Family'
+        )
+    """)
+    
     months_data = [
         (f"TXN-{100+i}", "MAG-IND-2024-88", f"Month {i}", f"2025-{i:02d}-15" if i <= 12 else f"2026-{i-12:02d}-15", "Rs. 1,250", "Success")
         for i in range(1, 15)
@@ -100,9 +117,22 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi User", size=16, weight="bold", color="#1E1B4B")
+    avatar_letter_txt = ft.Text("", size=18, weight="bold", color="white")
+    user_greeting_txt = ft.Text("Hi", size=16, weight="bold", color="#1E1B4B")
     card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
+
+    def update_all_user_names(entered_name):
+        clean_name = entered_name.strip()
+        if clean_name:
+            user_name[0] = clean_name
+            first_char = clean_name[0].upper()
+            avatar_letter_txt.value = first_char
+            user_greeting_txt.value = f"Hi {clean_name}"
+            card_holder_name_txt.value = clean_name.upper()
+            profile_name_txt.value = f"Name: {user_salutation[0]} {clean_name}"
+            profile_card_name.value = f"Name: {user_salutation[0]} {clean_name}"
+            v_name.value = clean_name
+        page.update()
 
     # ----------------------------------------------------
     # ENGLISH AI PROBLEM SOLVER BOT
@@ -126,8 +156,9 @@ def main(page: ft.Page):
 
     def resolve_english_query(query):
         q = query.lower().strip()
+        display_name = user_name[0] if user_name[0] else "Customer"
         if q in ["hi", "hello", "hey", "good morning", "good evening", "help"]:
-            return f"Hello {user_name[0]}! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle policy, or payment today?"
+            return f"Hello {display_name}! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle policy, or payment today?"
         elif "claim" in q:
             return "To file a claim:\n1. Open Home Dashboard.\n2. Tap 'Life Claim' or 'Health Claim'.\n3. Fill in incident description and claim amount.\n4. Submit. Our surveyor processes it within 4 hours."
         elif "car" in q or "bike" in q or "vehicle" in q:
@@ -689,7 +720,6 @@ def main(page: ft.Page):
         vehicle_entry_screen.content.controls[2].content.controls[1].value = f"Enter {v_type} Number"
         switch_screen("vehicle_entry")
 
-    # Big Vehicle Cards
     big_car_card = ft.Container(
         content=ft.Row([
             ft.Column([
@@ -893,7 +923,7 @@ def main(page: ft.Page):
         ft.Container(height=20)
     ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
+    profile_name_txt = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     customer_info_view = ft.Column([
@@ -1001,7 +1031,7 @@ def main(page: ft.Page):
         floating_help_pill
     ], spacing=8)
 
-    profile_card_name = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
+    profile_card_name = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
     profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     profile_view = ft.Column([
@@ -1129,20 +1159,12 @@ def main(page: ft.Page):
         if not v_name.value or not v_mobile.value:
             toast("Please enter all details!", "#B91C1C")
             return
-        user_name[0] = v_name.value.strip()
         current_mobile[0] = v_mobile.value.strip()
         current_policy[0] = v_policy.value.strip()
         current_aadhaar[0] = v_aadhaar.value.strip()
-
-        # Update dynamic names and initials everywhere
-        if len(user_name[0]) > 0:
-            avatar_letter_txt.value = user_name[0][0].upper()
-        user_greeting_txt.value = f"Hi {user_name[0]}"
-        card_holder_name_txt.value = user_name[0].upper()
-        profile_name_txt.value = f"Name: {user_salutation[0]} {user_name[0]}"
-        profile_card_name.value = f"Name: {user_salutation[0]} {user_name[0]}"
-        profile_mobile_txt.value = f"Mobile: +91 {current_mobile[0]}"
-        profile_card_mobile.value = f"Mobile: +91 {current_mobile[0]}"
+        
+        # Strictly update user name across entire application
+        update_all_user_names(v_name.value)
 
         toast("Policy & Identity Verified!", "#047857")
         switch_screen("home")
@@ -1265,7 +1287,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN (Dynamic update of user name initial)
+    # SCREEN 1: LOGIN (Live sync of user name)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1285,11 +1307,8 @@ def main(page: ft.Page):
 
     def on_name_type(e):
         val = (name_field.value or "").strip()
-        if len(val) > 0:
-            avatar_letter_txt.value = val[0].upper()
-            user_greeting_txt.value = f"Hi {val}"
-            card_holder_name_txt.value = val.upper()
-            page.update()
+        if val:
+            update_all_user_names(val)
 
     name_field = ft.TextField(
         label="Full Name",
@@ -1320,15 +1339,11 @@ def main(page: ft.Page):
         def on_grant_permissions(e):
             page.dialog.open = False
             current_mobile[0] = m_val
-            user_name[0] = n_val
             user_salutation[0] = s_val
-            v_name.value = n_val
             v_mobile.value = m_val
 
-            first_initial = n_val[0].upper() if len(n_val) > 0 else "U"
-            avatar_letter_txt.value = first_initial
-            user_greeting_txt.value = f"Hi {user_name[0]}"
-            card_holder_name_txt.value = user_name[0].upper()
+            # Live sync the exact user typed name
+            update_all_user_names(n_val)
 
             otp_status_lbl.value = f"Enter 4-digit code sent to +91 {m_val}"
             switch_screen("otp")
