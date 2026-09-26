@@ -4,6 +4,7 @@ import sqlite3
 import datetime
 import threading
 import time
+import math
 import os
 
 DB_FILE = "magadha_insurance.db"
@@ -213,7 +214,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (FLIP & TOGGLE)
+    # VIRTUAL CARD CONTENT (LIFE & HEALTH SIDES)
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
@@ -291,6 +292,9 @@ def main(page: ft.Page):
         ], alignment="spaceBetween")
     ], spacing=3)
 
+    # ----------------------------------------------------
+    # ROTATING 3D FLIP PASS CONTAINER
+    # ----------------------------------------------------
     virtual_card_container = ft.Container(
         content=life_card_content,
         width=380,
@@ -298,10 +302,24 @@ def main(page: ft.Page):
         padding=14,
         border_radius=16,
         bgcolor="#0F172A",
-        shadow=ft.BoxShadow(blur_radius=12, color="#02061730")
+        shadow=ft.BoxShadow(blur_radius=12, color="#02061730"),
+        animate_rotation=ft.Animation(350, "easeInOut"),
+        rotate=0
     )
 
+    is_flipping = [False]
+
     def trigger_card_flip(e):
+        if is_flipping[0]:
+            return
+        is_flipping[0] = True
+
+        # First half of horizontal rotation (90 degrees)
+        virtual_card_container.rotate = math.pi * 0.5
+        page.update()
+        time.sleep(0.18)
+
+        # Switch content & color midway
         if card_side[0] == "life":
             card_side[0] = "health"
             virtual_card_container.content = health_card_content
@@ -310,7 +328,12 @@ def main(page: ft.Page):
             card_side[0] = "life"
             virtual_card_container.content = life_card_content
             virtual_card_container.bgcolor = "#0F172A"
+
+        # Complete rotation back to 0 degrees smoothly
+        virtual_card_container.rotate = 0
         page.update()
+        time.sleep(0.18)
+        is_flipping[0] = False
 
     virtual_card_container.on_click = trigger_card_flip
 
