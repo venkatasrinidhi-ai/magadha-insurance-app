@@ -61,7 +61,7 @@ def init_db():
     c.execute("""
         INSERT OR REPLACE INTO customer_profile VALUES (
             'MAG-IND-2024-88',
-            'User',
+            'Srinidhi',
             'Mr.',
             'XXXX-XXXX-7892',
             '9876543210',
@@ -102,7 +102,7 @@ def main(page: ft.Page):
 
     current_mobile = [""]
     user_salutation = ["Mr."]
-    user_name = [""]
+    user_name = ["Srinidhi"]
     current_policy = ["MAG-IND-2024-88"]
     current_aadhaar = ["XXXX-XXXX-7892"]
     nominee_info = ["Family Nominee"]
@@ -118,60 +118,72 @@ def main(page: ft.Page):
         page.update()
 
     avatar_letter_txt = ft.Text("S", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi User", size=16, weight="bold", color="#1E1B4B")
+    user_greeting_txt = ft.Text("Hi Srinidhi", size=16, weight="bold", color="#1E1B4B")
 
     # ----------------------------------------------------
-    # ENGLISH AI PROBLEM SOLVER BOT
+    # ENGLISH AI PROBLEM SOLVER BOT (STRICTLY IN THE BOX)
     # ----------------------------------------------------
-    help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270)
-    help_input_field = ft.TextField(hint_text="Describe your issue or query...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
+    help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270, auto_scroll=True)
+    help_input_field = ft.TextField(hint_text="Ask about claim, vehicle, payment, policy...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
+
+    def make_chat_bubble(msg_text, is_user=False):
+        return ft.Row(
+            [
+                ft.Container(
+                    content=ft.Text(msg_text, color="white" if is_user else "#0F172A", size=12),
+                    bgcolor="#4F46E5" if is_user else "#E2E8F0",
+                    padding=10,
+                    border_radius=12,
+                    max_width=280
+                )
+            ],
+            alignment="end" if is_user else "start"
+        )
 
     def resolve_english_query(query):
-        q = query.lower()
-        if "claim" in q or "reimbursement" in q:
-            return "To file a claim, tap 'Life Claim' or 'Health Claim' on your Home dashboard, fill in the incident description and amount, then submit. Our surveyor reviews claims within 4 business hours."
-        elif "otp" in q or "login" in q or "verify" in q:
-            return "For OTP verification, any 4-digit code entered on your screen will authenticate successfully. You can tap on any digit box directly to replace or correct numbers."
-        elif "policy" in q or "valid" in q or "active" in q:
-            return f"Your primary policy number is {current_policy[0]}. It provides an active sum assured of Rs. 15,00,000 valid up to 14 Jan 2027 with guaranteed nominee settlement."
+        q = query.lower().strip()
+        if q in ["hi", "hello", "hey", "help", "good morning", "good evening", "hii"]:
+            return "Hello! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle insurance, or payment today?"
+        elif "claim" in q:
+            return "To file a claim:\n1. Open your Home dashboard.\n2. Tap 'Life Claim' or 'Health Claim'.\n3. Enter incident details and bill amount.\n4. Click Submit. We review and approve within 4 hours."
         elif "car" in q or "bike" in q or "vehicle" in q:
-            return "To buy or renew vehicle insurance, click on the Car or Two-Wheeler banner on Home, input your registration number (e.g., AP39CD1099), and choose from 16+ top national insurers."
-        elif "home" in q or "business" in q or "travel" in q or "cyber" in q:
-            return "Tap on any plan card under 'More Insurance Products' to choose tenure (1, 2, or 3 Years) and pay instantly via UPI (PhonePe, GPay, Paytm) or Debit/Credit Cards."
-        elif "pay" in q or "upi" in q or "failed" in q:
-            return "Payments are secured with 256-bit encryption. If an amount was deducted without policy generation, it auto-reverses to your bank within 24 hours. Contact toll-free 1800-MAGADHA for priority escalation."
+            return "To get vehicle insurance:\n1. Tap the Car or Bike banner on the Home page.\n2. Enter your registration number (e.g. AP39CD1099).\n3. Compare instant quotes from 16+ top insurers and click 'Buy Now'."
+        elif "pay" in q or "upi" in q or "money" in q or "failed" in q:
+            return "Payments are 100% secure. If your amount was deducted without policy activation, it will be automatically refunded to your bank within 24 hours. Check 'Payment History' for live status."
+        elif "policy" in q or "valid" in q:
+            return f"Your policy number is {current_policy[0]}. It gives Rs. 15,00,000 coverage valid up to 14 Jan 2027 with cashless hospitalization and guaranteed nominee payouts."
+        elif "otp" in q or "login" in q:
+            return "You can enter any 4 digits to log in. If you enter an incorrect digit, simply tap on that box directly to replace it."
         elif "nominee" in q:
-            return f"Current designated nominee is '{nominee_info[0]}'. To update beneficiary details, navigate to Profile -> Policy Schedule Overview."
+            return f"Your registered nominee is '{nominee_info[0]}'. Beneficiary settlements are processed directly to the nominee's verified bank account."
+        elif "download" in q or "card" in q:
+            return "Your virtual Cashless Pass is available right on the Home screen. Tap 'Flip Card' to toggle between Life and Health passes."
         else:
-            return "Thank you for reaching Magadha Customer Care. I am your automated assistant. Please specify your query regarding Claims, Vehicle Policies, Premium Payments, or Account Verification to receive immediate help."
+            return f"I understand you need help regarding '{query}'. You can file instant claims, buy policies via UPI, or manage your policy directly from this portal. For urgent live assistance, call toll-free 1800-MAGADHA."
 
     def on_send_help_msg(e):
         user_msg = help_input_field.value.strip()
         if not user_msg:
             return
-        help_chat_col.controls.append(
-            ft.Row([ft.Container(content=ft.Text(user_msg, color="white", size=12), bgcolor="#4F46E5", padding=8, border_radius=8)], alignment="end")
-        )
+        help_chat_col.controls.append(make_chat_bubble(user_msg, is_user=True))
         help_input_field.value = ""
         page.update()
 
         ans = resolve_english_query(user_msg)
         time.sleep(0.2)
-        help_chat_col.controls.append(
-            ft.Row([ft.Container(content=ft.Text(ans, color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
-        )
+        help_chat_col.controls.append(make_chat_bubble(ans, is_user=False))
         page.update()
 
     help_chat_col.controls.append(
-        ft.Row([ft.Container(content=ft.Text("Hello! I am Magadha AI Help Desk. How may I assist you with your insurance policies today?", color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
+        make_chat_bubble("Hello! I am your Magadha AI Assistant. Please describe your issue in English, and I will help you solve it.", is_user=False)
     )
 
     help_bottom_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.Row([ft.Icon("support_agent", color="#4F46E5", size=24), ft.Text("Magadha Help Desk", size=15, weight="bold", color="#0F172A")]),
-                    ft.IconButton(icon="close", icon_size=18, on_click=lambda _: setattr(help_bottom_sheet, "open", False) or page.update())
+                    ft.Row([ft.Icon("support_agent", color="#4F46E5", size=24), ft.Text("Magadha AI Help Desk", size=15, weight="bold", color="#0F172A")]),
+                    ft.IconButton(icon="close", icon_size=20, on_click=lambda _: setattr(help_bottom_sheet, "open", False) or page.update())
                 ], alignment="spaceBetween"),
                 ft.Divider(height=1),
                 help_chat_col,
@@ -181,7 +193,8 @@ def main(page: ft.Page):
                 ], spacing=4)
             ], tight=True, spacing=6),
             padding=16,
-            bgcolor="white"
+            bgcolor="white",
+            width=380
         )
     )
     page.overlay.append(help_bottom_sheet)
@@ -366,7 +379,6 @@ def main(page: ft.Page):
         shadow=ft.BoxShadow(blur_radius=10, color="#0F172A15")
     )
 
-    # Claims Sheet
     claim_type_field = ft.Dropdown(
         label="Claim Type",
         options=[ft.dropdown.Option("Life Insurance"), ft.dropdown.Option("Health Insurance")],
@@ -756,7 +768,6 @@ def main(page: ft.Page):
         on_click=lambda _: open_vehicle_flow("Bike")
     )
 
-    # Interactive Categories Grid (Home, Business, Travel, Cyber)
     other_categories_grid = ft.Row([
         ft.Container(
             content=ft.Column([
@@ -913,7 +924,7 @@ def main(page: ft.Page):
         ft.Container(height=20)
     ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
+    profile_name_txt = ft.Text("Name: Srinidhi", size=13, weight="bold", color="#0F172A")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     customer_info_view = ft.Column([
@@ -1021,7 +1032,7 @@ def main(page: ft.Page):
         floating_help_pill
     ], spacing=8)
 
-    profile_card_name = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
+    profile_card_name = ft.Text("Name: Srinidhi", size=13, weight="bold", color="#0F172A")
     profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     profile_view = ft.Column([
@@ -1054,7 +1065,6 @@ def main(page: ft.Page):
             main_viewport.content = profile_view
         page.update()
 
-    # User Profile Slide-in Menu Sheet
     menu_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
@@ -1155,7 +1165,7 @@ def main(page: ft.Page):
         current_policy[0] = v_policy.value.strip()
         current_aadhaar[0] = v_aadhaar.value.strip()
 
-        # Update Circle Initial with Strictly the User's Actual Name First Letter
+        # Update Circle Initial with Strictly the User's Name First Letter
         if len(user_name[0]) > 0:
             avatar_letter_txt.value = user_name[0][0].upper()
         user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
@@ -1324,6 +1334,7 @@ def main(page: ft.Page):
     name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        value="Srinidhi",
         hint_text="e.g. Srinidhi",
         hint_style=ft.TextStyle(color="#64748B"),
         width=205,
@@ -1348,7 +1359,6 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    # Permissions Modal
     def show_permissions_and_proceed(m_val, n_val, s_val):
         def on_grant_permissions(e):
             page.dialog.open = False
@@ -1358,7 +1368,6 @@ def main(page: ft.Page):
             v_name.value = n_val
             v_mobile.value = m_val
 
-            # Strictly set user initial
             first_initial = n_val[0].upper() if len(n_val) > 0 else "S"
             avatar_letter_txt.value = first_initial
             user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
