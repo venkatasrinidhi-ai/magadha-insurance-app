@@ -95,7 +95,9 @@ init_db()
 def main(page: ft.Page):
     page.title = "Magadha Insurance Portal"
     page.padding = 0
-    page.bgcolor = "#F8FAFC"
+    page.bgcolor = "#0F172A"
+    page.horizontal_alignment = "center"
+    page.vertical_alignment = "start"
 
     current_mobile = [""]
     user_salutation = ["Mr."]
@@ -114,7 +116,7 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    # Dynamic Avatar initial starts blank/synced with typed name
+    # Right Circle Avatar Dynamic Letter
     avatar_letter_txt = ft.Text("C", size=18, weight="bold", color="white")
     user_greeting_txt = ft.Text("Hi Customer", size=16, weight="bold", color="#1E1B4B")
 
@@ -687,6 +689,7 @@ def main(page: ft.Page):
         vehicle_entry_screen.content.controls[2].content.controls[1].value = f"Enter {v_type} Number"
         switch_screen("vehicle_entry")
 
+    # Big Vehicle Cards
     big_car_card = ft.Container(
         content=ft.Row([
             ft.Column([
@@ -780,7 +783,7 @@ def main(page: ft.Page):
                 "Global Travel Shield",
                 1150,
                 "International travel health emergencies, baggage delay, and trip cancellation coverage across 150+ countries.",
-                ["$100,00,00 Cashless hospital network", "Loss of checked-in baggage compensation", "Flight delay & missed connection cover", "Passport loss assistance"]
+                ["$100,000 Cashless hospital network", "Loss of checked-in baggage compensation", "Flight delay & missed connection cover", "Passport loss assistance"]
             )
         ),
         ft.Container(
@@ -1028,15 +1031,16 @@ def main(page: ft.Page):
             main_viewport.content = profile_view
         page.update()
 
+    # Right Circle Tap Slide-up Sheet
     menu_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
                 ft.Row([
                     ft.Container(
                         content=avatar_letter_txt,
-                        width=42,
-                        height=42,
-                        border_radius=21,
+                        width=44,
+                        height=44,
+                        border_radius=22,
                         bgcolor="#4F46E5",
                         alignment=ft.Alignment(0, 0)
                     ),
@@ -1055,7 +1059,7 @@ def main(page: ft.Page):
                 ft.Divider(height=1),
                 ft.ListTile(leading=ft.Icon("logout", color="#DC2626"), title=ft.Text("Logout Account", color="#DC2626", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), switch_screen("login")])
             ], tight=True, spacing=1),
-            padding=14,
+            padding=16,
             bgcolor="white"
         )
     )
@@ -1065,6 +1069,7 @@ def main(page: ft.Page):
         menu_sheet.open = True
         page.update()
 
+    # The Right Side Profile Circle with User Initial
     profile_circle_btn = ft.Container(
         content=avatar_letter_txt,
         width=38,
@@ -1092,52 +1097,10 @@ def main(page: ft.Page):
         border=ft.border.only(bottom=ft.BorderSide(1, "#CBD5E1"))
     )
 
-    # ----------------------------------------------------
-    # LAPTOP DESKTOP SIDEBAR NAVIGATION
-    # ----------------------------------------------------
-    desktop_sidebar = ft.Container(
-        content=ft.Column([
-            ft.Container(
-                content=ft.Row([
-                    ft.Container(content=ft.Text("M", size=16, weight="bold", color="white"), width=32, height=32, bgcolor="#4F46E5", border_radius=6, alignment=ft.Alignment(0, 0)),
-                    ft.Text("MAGADHA", size=16, weight="bold", color="#0F172A")
-                ], spacing=6),
-                padding=10
-            ),
-            ft.Container(
-                content=ft.Row([
-                    profile_circle_btn,
-                    ft.Column([
-                        user_greeting_txt,
-                        ft.Text("Active Policyholder", size=10, color="#64748B")
-                    ], spacing=1)
-                ], spacing=8),
-                padding=8,
-                bgcolor="#EEF2FF",
-                border_radius=10
-            ),
-            ft.Divider(height=1),
-            ft.TextButton("Home Dashboard", icon="home", on_click=lambda _: switch_nav_tab("home")),
-            ft.TextButton("Policy Schedule", icon="badge", on_click=lambda _: switch_nav_tab("policy")),
-            ft.TextButton("Payment History", icon="history", on_click=lambda _: switch_nav_tab("history")),
-            ft.TextButton("Claims Center", icon="receipt_long", on_click=lambda _: switch_nav_tab("claims")),
-            ft.TextButton("Explore Products", icon="storefront", on_click=lambda _: switch_nav_tab("explore")),
-            ft.TextButton("Profile Settings", icon="person", on_click=lambda _: switch_nav_tab("profile")),
-            ft.Divider(height=1),
-            ft.TextButton("Need Assistance?", icon="support_agent", on_click=trigger_help_desk),
-            ft.TextButton("Logout", icon="logout", icon_color="#DC2626", on_click=lambda _: switch_screen("login"))
-        ], spacing=6),
-        width=210,
-        padding=12,
-        bgcolor="white",
-        border=ft.border.only(right=ft.BorderSide(1, "#E2E8F0")),
-        visible=False
-    )
-
     home_screen = ft.Container(
         content=ft.Column([
             top_bar,
-            ft.Row([desktop_sidebar, main_viewport], expand=True, spacing=0)
+            main_viewport
         ], expand=True, spacing=0),
         expand=True,
         visible=False
@@ -1300,7 +1263,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN (Name first letter reflects everywhere)
+    # SCREEN 1: LOGIN (Dynamic update of user name initial)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1359,7 +1322,6 @@ def main(page: ft.Page):
             v_name.value = n_val
             v_mobile.value = m_val
 
-            # Strictly pick the first letter of whatever the user typed
             first_initial = n_val[0].upper() if len(n_val) > 0 else "U"
             avatar_letter_txt.value = first_initial
             user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
@@ -1477,9 +1439,7 @@ def main(page: ft.Page):
 
         page.update()
 
-    # ----------------------------------------------------
-    # RESPONSIVE ADAPTIVE LAYOUT (Mobile: Vertical | Laptop: Horizontal)
-    # ----------------------------------------------------
+    # Unified Centered App Frame (Responsive on both Mobile & Laptop)
     device_frame = ft.Container(
         content=ft.Stack([
             splash_screen,
@@ -1491,30 +1451,24 @@ def main(page: ft.Page):
             vehicle_plans_view,
             product_detail_screen
         ], expand=True),
-        width=420,
-        height=860,
+        width=440,
+        height=880,
         bgcolor="#F8FAFC",
-        border_radius=18
+        border_radius=18,
+        shadow=ft.BoxShadow(blur_radius=20, color="#00000030")
     )
 
     main_wrapper = ft.Row([device_frame], alignment="center")
 
     def adapt_layout():
-        is_laptop = (page.width is not None and page.width > 768)
-        if is_laptop:
-            # Laptop Horizontal Expansion
-            device_frame.width = min(page.width - 40, 1080)
-            device_frame.height = min(page.height - 30, 890) if page.height else 860
-            device_frame.shadow = ft.BoxShadow(blur_radius=20, color="#00000025")
-            desktop_sidebar.visible = True
-            top_bar.visible = False  # Top mobile header replaced by persistent sidebar
-        else:
-            # Mobile Full Vertical Flow
-            device_frame.width = page.width if page.width else 420
-            device_frame.height = page.height if page.height else 860
+        if page.width is not None and page.width <= 480:
+            device_frame.width = page.width
+            device_frame.height = page.height if page.height else 880
             device_frame.shadow = None
-            desktop_sidebar.visible = False
-            top_bar.visible = True
+        else:
+            device_frame.width = 440
+            device_frame.height = min(page.height - 20, 890) if page.height else 880
+            device_frame.shadow = ft.BoxShadow(blur_radius=20, color="#00000030")
 
     def on_window_resize(e):
         adapt_layout()
