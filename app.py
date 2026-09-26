@@ -95,7 +95,7 @@ init_db()
 def main(page: ft.Page):
     page.title = "Magadha Insurance Portal"
     page.padding = 0
-    page.bgcolor = "#0F172A"
+    page.bgcolor = "#F1F5F9"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
@@ -116,9 +116,8 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    # Right Circle Avatar Dynamic Letter
     avatar_letter_txt = ft.Text("C", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi Customer", size=16, weight="bold", color="#1E1B4B")
+    user_greeting_txt = ft.Text("Hi Customer", size=17, weight="bold", color="#1E1B4B")
 
     # ----------------------------------------------------
     # ENGLISH AI PROBLEM SOLVER BOT
@@ -689,7 +688,6 @@ def main(page: ft.Page):
         vehicle_entry_screen.content.controls[2].content.controls[1].value = f"Enter {v_type} Number"
         switch_screen("vehicle_entry")
 
-    # Big Vehicle Cards
     big_car_card = ft.Container(
         content=ft.Row([
             ft.Column([
@@ -862,16 +860,18 @@ def main(page: ft.Page):
         page.update()
 
     # ----------------------------------------------------
-    # HOME MAIN SCROLL VIEW
+    # DYNAMIC LAYOUT CONTAINERS (MOBILE vs LAPTOP HORIZONTAL)
     # ----------------------------------------------------
-    home_content_view = ft.Column([
+    left_side_col = ft.Column([
         user_greeting_txt,
         virtual_card_container,
         coverage_detail_box,
         action_buttons,
-        ft.Container(height=2),
+    ], spacing=10)
+
+    right_side_col = ft.Column([
         ft.Row([
-            ft.Text("Vehicle Protection", size=13, weight="bold", color="#0F172A"),
+            ft.Text("Vehicle Protection", size=14, weight="bold", color="#0F172A"),
             ft.Text("Best Quotes", size=11, weight="bold", color="#2563EB")
         ], alignment="spaceBetween"),
         big_car_card,
@@ -886,9 +886,18 @@ def main(page: ft.Page):
                 ft.Text("Need instant claims or policy support?", size=10, color="#64748B")
             ], spacing=1),
             floating_help_pill
-        ], alignment="spaceBetween"),
-        ft.Container(height=15)
-    ], horizontal_alignment="center", spacing=8, scroll=ft.ScrollMode.AUTO)
+        ], alignment="spaceBetween")
+    ], spacing=10)
+
+    home_responsive_content = ft.ResponsiveRow([
+        ft.Container(content=left_side_col, col={"sm": 12, "md": 6, "lg": 6}),
+        ft.Container(content=right_side_col, col={"sm": 12, "md": 6, "lg": 6}),
+    ], spacing=16)
+
+    home_content_view = ft.Column([
+        home_responsive_content,
+        ft.Container(height=20)
+    ], scroll=ft.ScrollMode.AUTO)
 
     profile_name_txt = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
@@ -1069,7 +1078,6 @@ def main(page: ft.Page):
         menu_sheet.open = True
         page.update()
 
-    # The Right Side Profile Circle with User Initial
     profile_circle_btn = ft.Container(
         content=avatar_letter_txt,
         width=38,
@@ -1092,7 +1100,7 @@ def main(page: ft.Page):
                 profile_circle_btn
             ], spacing=4)
         ], alignment="spaceBetween"),
-        padding=10,
+        padding=12,
         bgcolor="white",
         border=ft.border.only(bottom=ft.BorderSide(1, "#CBD5E1"))
     )
@@ -1439,8 +1447,10 @@ def main(page: ft.Page):
 
         page.update()
 
-    # Unified Centered App Frame (Responsive on both Mobile & Laptop)
-    device_frame = ft.Container(
+    # ----------------------------------------------------
+    # FULL ADAPTIVE RESPONSIVE FRAME (Mobile: 440px | Laptop: Full Screen Width)
+    # ----------------------------------------------------
+    app_host_container = ft.Container(
         content=ft.Stack([
             splash_screen,
             login_screen,
@@ -1451,33 +1461,35 @@ def main(page: ft.Page):
             vehicle_plans_view,
             product_detail_screen
         ], expand=True),
-        width=440,
-        height=880,
         bgcolor="#F8FAFC",
-        border_radius=18,
-        shadow=ft.BoxShadow(blur_radius=20, color="#00000030")
+        expand=True
     )
 
-    main_wrapper = ft.Row([device_frame], alignment="center")
-
-    def adapt_layout():
-        if page.width is not None and page.width <= 480:
-            device_frame.width = page.width
-            device_frame.height = page.height if page.height else 880
-            device_frame.shadow = None
+    def adapt_screen_dimensions():
+        w = page.width if page.width else 1000
+        if w > 768:
+            # Laptop / Large Screen: Broad Horizontal Dashboard
+            app_host_container.width = min(w - 60, 1150)
+            app_host_container.border_radius = 16
+            app_host_container.shadow = ft.BoxShadow(blur_radius=25, color="#00000020")
+            page.bgcolor = "#0F172A"
         else:
-            device_frame.width = 440
-            device_frame.height = min(page.height - 20, 890) if page.height else 880
-            device_frame.shadow = ft.BoxShadow(blur_radius=20, color="#00000030")
+            # Mobile: Native Vertical Full Frame
+            app_host_container.width = None
+            app_host_container.border_radius = 0
+            app_host_container.shadow = None
+            page.bgcolor = "#F8FAFC"
 
-    def on_window_resize(e):
-        adapt_layout()
+    def on_page_resized(e):
+        adapt_screen_dimensions()
         page.update()
 
-    page.on_resized = on_window_resize
-    adapt_layout()
+    page.on_resized = on_page_resized
+    adapt_screen_dimensions()
 
-    page.add(main_wrapper)
+    page.add(
+        ft.Row([app_host_container], alignment="center", expand=True)
+    )
 
     def fast_init():
         time.sleep(0.3)
