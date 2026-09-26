@@ -4,7 +4,6 @@ import sqlite3
 import datetime
 import threading
 import time
-import math
 import os
 
 DB_FILE = "magadha_insurance.db"
@@ -61,7 +60,7 @@ def init_db():
     c.execute("""
         INSERT OR REPLACE INTO customer_profile VALUES (
             'MAG-IND-2024-88',
-            'Srinidhi',
+            'Customer',
             'Mr.',
             'XXXX-XXXX-7892',
             '9876543210',
@@ -96,13 +95,11 @@ init_db()
 def main(page: ft.Page):
     page.title = "Magadha Insurance Portal"
     page.padding = 0
-    page.bgcolor = "#0F172A"
-    page.horizontal_alignment = "center"
-    page.vertical_alignment = "start"
+    page.bgcolor = "#F8FAFC"
 
     current_mobile = [""]
     user_salutation = ["Mr."]
-    user_name = ["Srinidhi"]
+    user_name = ["Customer"]
     current_policy = ["MAG-IND-2024-88"]
     current_aadhaar = ["XXXX-XXXX-7892"]
     nominee_info = ["Family Nominee"]
@@ -117,11 +114,12 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    avatar_letter_txt = ft.Text("S", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi Srinidhi", size=16, weight="bold", color="#1E1B4B")
+    # Dynamic Avatar initial starts blank/synced with typed name
+    avatar_letter_txt = ft.Text("C", size=18, weight="bold", color="white")
+    user_greeting_txt = ft.Text("Hi Customer", size=16, weight="bold", color="#1E1B4B")
 
     # ----------------------------------------------------
-    # ENGLISH AI PROBLEM SOLVER BOT (SAFE CONTAINER WIDTH)
+    # ENGLISH AI PROBLEM SOLVER BOT
     # ----------------------------------------------------
     help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270, auto_scroll=True)
     help_input_field = ft.TextField(hint_text="Ask about claims, renewals, UPI, vehicles...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
@@ -145,7 +143,7 @@ def main(page: ft.Page):
         if q in ["hi", "hello", "hey", "good morning", "good evening", "help"]:
             return "Hello! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle policy, or payment today?"
         elif "claim" in q:
-            return "To file a claim:\n1. Go to Home Dashboard.\n2. Tap 'Life Claim' or 'Health Claim'.\n3. Fill in incident description and claim amount.\n4. Submit. Our surveyor processes it within 4 hours."
+            return "To file a claim:\n1. Open Home Dashboard.\n2. Tap 'Life Claim' or 'Health Claim'.\n3. Fill in incident description and claim amount.\n4. Submit. Our surveyor processes it within 4 hours."
         elif "car" in q or "bike" in q or "vehicle" in q:
             return "To protect your vehicle:\n1. Tap Car or Bike Insurance on Home.\n2. Enter registration number (e.g. AP39CD1099).\n3. Compare instant quotes from 16+ top insurers and tap 'Buy Now'."
         elif "pay" in q or "upi" in q or "deduct" in q:
@@ -782,7 +780,7 @@ def main(page: ft.Page):
                 "Global Travel Shield",
                 1150,
                 "International travel health emergencies, baggage delay, and trip cancellation coverage across 150+ countries.",
-                ["$100,000 Cashless hospital network", "Loss of checked-in baggage compensation", "Flight delay & missed connection cover", "Passport loss assistance"]
+                ["$100,00,00 Cashless hospital network", "Loss of checked-in baggage compensation", "Flight delay & missed connection cover", "Passport loss assistance"]
             )
         ),
         ft.Container(
@@ -889,7 +887,7 @@ def main(page: ft.Page):
         ft.Container(height=15)
     ], horizontal_alignment="center", spacing=8, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: Srinidhi", size=13, weight="bold", color="#0F172A")
+    profile_name_txt = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     customer_info_view = ft.Column([
@@ -997,7 +995,7 @@ def main(page: ft.Page):
         floating_help_pill
     ], spacing=8)
 
-    profile_card_name = ft.Text("Name: Srinidhi", size=13, weight="bold", color="#0F172A")
+    profile_card_name = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
     profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     profile_view = ft.Column([
@@ -1094,10 +1092,52 @@ def main(page: ft.Page):
         border=ft.border.only(bottom=ft.BorderSide(1, "#CBD5E1"))
     )
 
+    # ----------------------------------------------------
+    # LAPTOP DESKTOP SIDEBAR NAVIGATION
+    # ----------------------------------------------------
+    desktop_sidebar = ft.Container(
+        content=ft.Column([
+            ft.Container(
+                content=ft.Row([
+                    ft.Container(content=ft.Text("M", size=16, weight="bold", color="white"), width=32, height=32, bgcolor="#4F46E5", border_radius=6, alignment=ft.Alignment(0, 0)),
+                    ft.Text("MAGADHA", size=16, weight="bold", color="#0F172A")
+                ], spacing=6),
+                padding=10
+            ),
+            ft.Container(
+                content=ft.Row([
+                    profile_circle_btn,
+                    ft.Column([
+                        user_greeting_txt,
+                        ft.Text("Active Policyholder", size=10, color="#64748B")
+                    ], spacing=1)
+                ], spacing=8),
+                padding=8,
+                bgcolor="#EEF2FF",
+                border_radius=10
+            ),
+            ft.Divider(height=1),
+            ft.TextButton("Home Dashboard", icon="home", on_click=lambda _: switch_nav_tab("home")),
+            ft.TextButton("Policy Schedule", icon="badge", on_click=lambda _: switch_nav_tab("policy")),
+            ft.TextButton("Payment History", icon="history", on_click=lambda _: switch_nav_tab("history")),
+            ft.TextButton("Claims Center", icon="receipt_long", on_click=lambda _: switch_nav_tab("claims")),
+            ft.TextButton("Explore Products", icon="storefront", on_click=lambda _: switch_nav_tab("explore")),
+            ft.TextButton("Profile Settings", icon="person", on_click=lambda _: switch_nav_tab("profile")),
+            ft.Divider(height=1),
+            ft.TextButton("Need Assistance?", icon="support_agent", on_click=trigger_help_desk),
+            ft.TextButton("Logout", icon="logout", icon_color="#DC2626", on_click=lambda _: switch_screen("login"))
+        ], spacing=6),
+        width=210,
+        padding=12,
+        bgcolor="white",
+        border=ft.border.only(right=ft.BorderSide(1, "#E2E8F0")),
+        visible=False
+    )
+
     home_screen = ft.Container(
         content=ft.Column([
             top_bar,
-            main_viewport
+            ft.Row([desktop_sidebar, main_viewport], expand=True, spacing=0)
         ], expand=True, spacing=0),
         expand=True,
         visible=False
@@ -1130,6 +1170,7 @@ def main(page: ft.Page):
         current_policy[0] = v_policy.value.strip()
         current_aadhaar[0] = v_aadhaar.value.strip()
 
+        # Update initial strictly from user input
         if len(user_name[0]) > 0:
             avatar_letter_txt.value = user_name[0][0].upper()
         user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
@@ -1259,7 +1300,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN
+    # SCREEN 1: LOGIN (Name first letter reflects everywhere)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1281,13 +1322,13 @@ def main(page: ft.Page):
         val = (name_field.value or "").strip()
         if len(val) > 0:
             avatar_letter_txt.value = val[0].upper()
+            user_greeting_txt.value = f"Hi {val}"
             page.update()
 
     name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
-        value="Srinidhi",
-        hint_text="e.g. Srinidhi",
+        hint_text="Enter your full name",
         width=210,
         bgcolor="#F8FAFC",
         border_color="#475569",
@@ -1318,7 +1359,8 @@ def main(page: ft.Page):
             v_name.value = n_val
             v_mobile.value = m_val
 
-            first_initial = n_val[0].upper() if len(n_val) > 0 else "S"
+            # Strictly pick the first letter of whatever the user typed
+            first_initial = n_val[0].upper() if len(n_val) > 0 else "U"
             avatar_letter_txt.value = first_initial
             user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
 
@@ -1435,7 +1477,9 @@ def main(page: ft.Page):
 
         page.update()
 
-    # Responsive Frame for Mobile & Laptop
+    # ----------------------------------------------------
+    # RESPONSIVE ADAPTIVE LAYOUT (Mobile: Vertical | Laptop: Horizontal)
+    # ----------------------------------------------------
     device_frame = ft.Container(
         content=ft.Stack([
             splash_screen,
@@ -1449,14 +1493,37 @@ def main(page: ft.Page):
         ], expand=True),
         width=420,
         height=860,
-        bgcolor="#F1F5F9",
-        border_radius=18,
-        shadow=ft.BoxShadow(blur_radius=25, color="#00000040")
+        bgcolor="#F8FAFC",
+        border_radius=18
     )
 
-    page.add(
-        ft.Row([device_frame], alignment="center")
-    )
+    main_wrapper = ft.Row([device_frame], alignment="center")
+
+    def adapt_layout():
+        is_laptop = (page.width is not None and page.width > 768)
+        if is_laptop:
+            # Laptop Horizontal Expansion
+            device_frame.width = min(page.width - 40, 1080)
+            device_frame.height = min(page.height - 30, 890) if page.height else 860
+            device_frame.shadow = ft.BoxShadow(blur_radius=20, color="#00000025")
+            desktop_sidebar.visible = True
+            top_bar.visible = False  # Top mobile header replaced by persistent sidebar
+        else:
+            # Mobile Full Vertical Flow
+            device_frame.width = page.width if page.width else 420
+            device_frame.height = page.height if page.height else 860
+            device_frame.shadow = None
+            desktop_sidebar.visible = False
+            top_bar.visible = True
+
+    def on_window_resize(e):
+        adapt_layout()
+        page.update()
+
+    page.on_resized = on_window_resize
+    adapt_layout()
+
+    page.add(main_wrapper)
 
     def fast_init():
         time.sleep(0.3)
