@@ -96,7 +96,7 @@ init_db()
 def main(page: ft.Page):
     page.title = "Magadha Insurance Portal"
     page.padding = 0
-    page.bgcolor = "#0F172A"  # Professional deep background for laptops
+    page.bgcolor = "#0F172A"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
@@ -121,7 +121,7 @@ def main(page: ft.Page):
     user_greeting_txt = ft.Text("Hi Srinidhi", size=16, weight="bold", color="#1E1B4B")
 
     # ----------------------------------------------------
-    # ENGLISH AI PROBLEM SOLVER BOT (IN-BOX WRAPPING)
+    # ENGLISH AI PROBLEM SOLVER BOT (SAFE CONTAINER WIDTH)
     # ----------------------------------------------------
     help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270, auto_scroll=True)
     help_input_field = ft.TextField(hint_text="Ask about claims, renewals, UPI, vehicles...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
@@ -130,11 +130,11 @@ def main(page: ft.Page):
         return ft.Row(
             [
                 ft.Container(
-                    content=ft.Text(msg_text, color="white" if is_user else "#0F172A", size=12),
+                    content=ft.Text(msg_text, color="white" if is_user else "#0F172A", size=12, no_wrap=False),
                     bgcolor="#4F46E5" if is_user else "#E2E8F0",
                     padding=10,
                     border_radius=12,
-                    max_width=280
+                    width=270
                 )
             ],
             alignment="end" if is_user else "start"
@@ -214,7 +214,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (FLIP & TOGGLE)
+    # VIRTUAL CARD
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
@@ -421,7 +421,7 @@ def main(page: ft.Page):
     ], spacing=8)
 
     # ----------------------------------------------------
-    # DEDICATED PRODUCT DETAILS SCREEN FOR ALL CATEGORIES
+    # PRODUCT DETAILS SCREEN
     # ----------------------------------------------------
     product_detail_title = ft.Text("Plan Details", size=17, weight="bold", color="#0F172A")
     product_detail_desc = ft.Text("", size=11, color="#475569")
@@ -689,7 +689,6 @@ def main(page: ft.Page):
         vehicle_entry_screen.content.controls[2].content.controls[1].value = f"Enter {v_type} Number"
         switch_screen("vehicle_entry")
 
-    # Big Vehicle Cards
     big_car_card = ft.Container(
         content=ft.Row([
             ft.Column([
@@ -1396,7 +1395,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 0: FAST INSTANT SPLASH (NO LAGGY FREEZE)
+    # SCREEN 0: FAST INSTANT SPLASH
     # ----------------------------------------------------
     splash_screen = ft.Container(
         content=ft.Column([
@@ -1436,9 +1435,7 @@ def main(page: ft.Page):
 
         page.update()
 
-    # ----------------------------------------------------
-    # RESPONSIVE PHONE CONTAINER (Perfect for Mobile & Laptop)
-    # ----------------------------------------------------
+    # Responsive Frame for Mobile & Laptop
     device_frame = ft.Container(
         content=ft.Stack([
             splash_screen,
