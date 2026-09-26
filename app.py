@@ -58,23 +58,6 @@ def init_db():
         )
     """)
     
-    c.execute("""
-        INSERT OR REPLACE INTO customer_profile VALUES (
-            'MAG-IND-2024-88',
-            'Customer',
-            'Mr.',
-            'XXXX-XXXX-7892',
-            '9876543210',
-            'Magadha Life & Health Twin Shield',
-            '2025-01-15',
-            '2027-01-14',
-            'Rs. 15,00,000',
-            'Rs. 1,250',
-            'Nominee',
-            'Family'
-        )
-    """)
-    
     months_data = [
         (f"TXN-{100+i}", "MAG-IND-2024-88", f"Month {i}", f"2025-{i:02d}-15" if i <= 12 else f"2026-{i-12:02d}-15", "Rs. 1,250", "Success")
         for i in range(1, 15)
@@ -102,7 +85,7 @@ def main(page: ft.Page):
 
     current_mobile = [""]
     user_salutation = ["Mr."]
-    user_name = ["Customer"]
+    user_name = [""]
     current_policy = ["MAG-IND-2024-88"]
     current_aadhaar = ["XXXX-XXXX-7892"]
     nominee_info = ["Family Nominee"]
@@ -117,8 +100,9 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    avatar_letter_txt = ft.Text("C", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi Customer", size=16, weight="bold", color="#1E1B4B")
+    avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
+    user_greeting_txt = ft.Text("Hi User", size=16, weight="bold", color="#1E1B4B")
+    card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
 
     # ----------------------------------------------------
     # ENGLISH AI PROBLEM SOLVER BOT
@@ -143,7 +127,7 @@ def main(page: ft.Page):
     def resolve_english_query(query):
         q = query.lower().strip()
         if q in ["hi", "hello", "hey", "good morning", "good evening", "help"]:
-            return "Hello! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle policy, or payment today?"
+            return f"Hello {user_name[0]}! Welcome to Magadha Insurance Help Desk. How can I assist you with your claim, vehicle policy, or payment today?"
         elif "claim" in q:
             return "To file a claim:\n1. Open Home Dashboard.\n2. Tap 'Life Claim' or 'Health Claim'.\n3. Fill in incident description and claim amount.\n4. Submit. Our surveyor processes it within 4 hours."
         elif "car" in q or "bike" in q or "vehicle" in q:
@@ -239,7 +223,7 @@ def main(page: ft.Page):
         ft.Row([
             ft.Column([
                 ft.Text("INSURED MEMBER", size=8, color="#CBD5E1", weight="bold"),
-                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
+                card_holder_name_txt
             ], spacing=1),
             ft.Column([
                 ft.Text("COVERAGE", size=8, color="#CBD5E1", weight="bold"),
@@ -277,7 +261,7 @@ def main(page: ft.Page):
         ft.Row([
             ft.Column([
                 ft.Text("PRIMARY HOLDER", size=8, color="#E2E8F0", weight="bold"),
-                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
+                card_holder_name_txt
             ], spacing=1),
             ft.Column([
                 ft.Text("FAMILY COVER", size=8, color="#E2E8F0", weight="bold"),
@@ -292,9 +276,6 @@ def main(page: ft.Page):
         ], alignment="spaceBetween")
     ], spacing=3)
 
-    # ----------------------------------------------------
-    # ROTATING 3D FLIP PASS CONTAINER
-    # ----------------------------------------------------
     virtual_card_container = ft.Container(
         content=life_card_content,
         width=380,
@@ -314,12 +295,10 @@ def main(page: ft.Page):
             return
         is_flipping[0] = True
 
-        # First half of horizontal rotation (90 degrees)
         virtual_card_container.rotate = math.pi * 0.5
         page.update()
         time.sleep(0.18)
 
-        # Switch content & color midway
         if card_side[0] == "life":
             card_side[0] = "health"
             virtual_card_container.content = health_card_content
@@ -329,7 +308,6 @@ def main(page: ft.Page):
             virtual_card_container.content = life_card_content
             virtual_card_container.bgcolor = "#0F172A"
 
-        # Complete rotation back to 0 degrees smoothly
         virtual_card_container.rotate = 0
         page.update()
         time.sleep(0.18)
@@ -915,7 +893,7 @@ def main(page: ft.Page):
         ft.Container(height=20)
     ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
+    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
     profile_mobile_txt = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     customer_info_view = ft.Column([
@@ -1023,7 +1001,7 @@ def main(page: ft.Page):
         floating_help_pill
     ], spacing=8)
 
-    profile_card_name = ft.Text("Name: Customer", size=13, weight="bold", color="#0F172A")
+    profile_card_name = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
     profile_card_mobile = ft.Text("Mobile: +91 ", size=12, color="#0F172A", weight="bold")
 
     profile_view = ft.Column([
@@ -1156,10 +1134,11 @@ def main(page: ft.Page):
         current_policy[0] = v_policy.value.strip()
         current_aadhaar[0] = v_aadhaar.value.strip()
 
-        # Update initial strictly from user input
+        # Update dynamic names and initials everywhere
         if len(user_name[0]) > 0:
             avatar_letter_txt.value = user_name[0][0].upper()
-        user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
+        user_greeting_txt.value = f"Hi {user_name[0]}"
+        card_holder_name_txt.value = user_name[0].upper()
         profile_name_txt.value = f"Name: {user_salutation[0]} {user_name[0]}"
         profile_card_name.value = f"Name: {user_salutation[0]} {user_name[0]}"
         profile_mobile_txt.value = f"Mobile: +91 {current_mobile[0]}"
@@ -1309,6 +1288,7 @@ def main(page: ft.Page):
         if len(val) > 0:
             avatar_letter_txt.value = val[0].upper()
             user_greeting_txt.value = f"Hi {val}"
+            card_holder_name_txt.value = val.upper()
             page.update()
 
     name_field = ft.TextField(
@@ -1347,7 +1327,8 @@ def main(page: ft.Page):
 
             first_initial = n_val[0].upper() if len(n_val) > 0 else "U"
             avatar_letter_txt.value = first_initial
-            user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
+            user_greeting_txt.value = f"Hi {user_name[0]}"
+            card_holder_name_txt.value = user_name[0].upper()
 
             otp_status_lbl.value = f"Enter 4-digit code sent to +91 {m_val}"
             switch_screen("otp")
