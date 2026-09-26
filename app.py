@@ -102,7 +102,7 @@ def main(page: ft.Page):
 
     current_mobile = [""]
     user_salutation = ["Mr."]
-    user_name = ["User"]
+    user_name = [""]
     current_policy = ["MAG-IND-2024-88"]
     current_aadhaar = ["XXXX-XXXX-7892"]
     nominee_info = ["Family Nominee"]
@@ -117,29 +117,33 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
+    avatar_letter_txt = ft.Text("S", size=18, weight="bold", color="white")
     user_greeting_txt = ft.Text("Hi User", size=16, weight="bold", color="#1E1B4B")
 
     # ----------------------------------------------------
-    # AI HELP DESK CHAT BOT (Available everywhere)
+    # ENGLISH AI PROBLEM SOLVER BOT
     # ----------------------------------------------------
-    help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=260)
-    help_input_field = ft.TextField(hint_text="Ask about claim, policy, OTP...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
+    help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270)
+    help_input_field = ft.TextField(hint_text="Describe your issue or query...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
 
-    def get_ai_bot_reply(query):
+    def resolve_english_query(query):
         q = query.lower()
-        if "claim" in q:
-            return "Claim file cheyadaniki Home page lo unna 'Life Claim' leda 'Health Claim' button click chesi details submit cheyyandi."
-        elif "otp" in q:
-            return "OTP verification lo mee phone ki vacchina 4-digit code ni enter cheyandi. Ee 4 digits aina system accept chestundi."
-        elif "policy" in q or "validity" in q:
-            return f"Mee policy no: {current_policy[0]}. Idi 2027-01-14 varaku active ga undi. Sum insured Rs. 15,00,000."
+        if "claim" in q or "reimbursement" in q:
+            return "To file a claim, tap 'Life Claim' or 'Health Claim' on your Home dashboard, fill in the incident description and amount, then submit. Our surveyor reviews claims within 4 business hours."
+        elif "otp" in q or "login" in q or "verify" in q:
+            return "For OTP verification, any 4-digit code entered on your screen will authenticate successfully. You can tap on any digit box directly to replace or correct numbers."
+        elif "policy" in q or "valid" in q or "active" in q:
+            return f"Your primary policy number is {current_policy[0]}. It provides an active sum assured of Rs. 15,00,000 valid up to 14 Jan 2027 with guaranteed nominee settlement."
         elif "car" in q or "bike" in q or "vehicle" in q:
-            return "Vehicle number enter cheyagane top companies (Bajaj, HDFC ERGO, SBI) IDV & best premium rates chupisthundi."
-        elif "payment" in q or "upi" in q:
-            return "UPI (PhonePe, GPay, Paytm, Navi, Amazon Pay) mariyu Debit/Credit cards tho instant policy renewal cheskovachu."
+            return "To buy or renew vehicle insurance, click on the Car or Two-Wheeler banner on Home, input your registration number (e.g., AP39CD1099), and choose from 16+ top national insurers."
+        elif "home" in q or "business" in q or "travel" in q or "cyber" in q:
+            return "Tap on any plan card under 'More Insurance Products' to choose tenure (1, 2, or 3 Years) and pay instantly via UPI (PhonePe, GPay, Paytm) or Debit/Credit Cards."
+        elif "pay" in q or "upi" in q or "failed" in q:
+            return "Payments are secured with 256-bit encryption. If an amount was deducted without policy generation, it auto-reverses to your bank within 24 hours. Contact toll-free 1800-MAGADHA for priority escalation."
+        elif "nominee" in q:
+            return f"Current designated nominee is '{nominee_info[0]}'. To update beneficiary details, navigate to Profile -> Policy Schedule Overview."
         else:
-            return "Magadha Insurance Help Desk 24/7 active ga untundi. Mee policy, claims & renewals gurinchi eppudaina assist chesthamu!"
+            return "Thank you for reaching Magadha Customer Care. I am your automated assistant. Please specify your query regarding Claims, Vehicle Policies, Premium Payments, or Account Verification to receive immediate help."
 
     def on_send_help_msg(e):
         user_msg = help_input_field.value.strip()
@@ -151,22 +155,22 @@ def main(page: ft.Page):
         help_input_field.value = ""
         page.update()
 
-        reply = get_ai_bot_reply(user_msg)
-        time.sleep(0.3)
+        ans = resolve_english_query(user_msg)
+        time.sleep(0.2)
         help_chat_col.controls.append(
-            ft.Row([ft.Container(content=ft.Text(reply, color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
+            ft.Row([ft.Container(content=ft.Text(ans, color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
         )
         page.update()
 
     help_chat_col.controls.append(
-        ft.Row([ft.Container(content=ft.Text("Hello! Nenu Magadha Insurance AI Assistant ni. Meeku em help kavali?", color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
+        ft.Row([ft.Container(content=ft.Text("Hello! I am Magadha AI Help Desk. How may I assist you with your insurance policies today?", color="#0F172A", size=12), bgcolor="#E2E8F0", padding=8, border_radius=8)], alignment="start")
     )
 
     help_bottom_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.Row([ft.Icon("support_agent", color="#4F46E5", size=24), ft.Text("Magadha AI Support", size=15, weight="bold", color="#0F172A")]),
+                    ft.Row([ft.Icon("support_agent", color="#4F46E5", size=24), ft.Text("Magadha Help Desk", size=15, weight="bold", color="#0F172A")]),
                     ft.IconButton(icon="close", icon_size=18, on_click=lambda _: setattr(help_bottom_sheet, "open", False) or page.update())
                 ], alignment="spaceBetween"),
                 ft.Divider(height=1),
@@ -224,7 +228,7 @@ def main(page: ft.Page):
         ft.Row([
             ft.Column([
                 ft.Text("INSURED MEMBER", size=8, color="#CBD5E1", weight="bold"),
-                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white", key="life_member_name")
+                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
             ], spacing=1),
             ft.Column([
                 ft.Text("COVERAGE", size=8, color="#CBD5E1", weight="bold"),
@@ -262,7 +266,7 @@ def main(page: ft.Page):
         ft.Row([
             ft.Column([
                 ft.Text("PRIMARY HOLDER", size=8, color="#E2E8F0", weight="bold"),
-                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white", key="health_member_name")
+                ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
             ], spacing=1),
             ft.Column([
                 ft.Text("FAMILY COVER", size=8, color="#E2E8F0", weight="bold"),
@@ -435,6 +439,102 @@ def main(page: ft.Page):
     ], spacing=8)
 
     # ----------------------------------------------------
+    # DEDICATED PRODUCT DETAILS SCREEN FOR ALL CATEGORIES
+    # ----------------------------------------------------
+    product_detail_title = ft.Text("Plan Details", size=18, weight="bold", color="#0F172A")
+    product_detail_desc = ft.Text("", size=12, color="#475569")
+    product_base_cost = [3500]
+    product_tenure = ["1 Year"]
+    product_total_cost_txt = ft.Text("₹3,500", size=22, weight="bold", color="#047857")
+    product_features_col = ft.Column(spacing=6)
+
+    def update_product_price():
+        mult = 1.0
+        if product_tenure[0] == "2 Years":
+            mult = 1.85
+        elif product_tenure[0] == "3 Years":
+            mult = 2.65
+        final_p = int(product_base_cost[0] * mult)
+        product_total_cost_txt.value = f"₹{final_p:,}"
+        page.update()
+
+    def on_product_tenure_change(e):
+        product_tenure[0] = e.control.value
+        update_product_price()
+
+    product_tenure_radios = ft.RadioGroup(
+        content=ft.Row([
+            ft.Radio(value="1 Year", label="1 Year"),
+            ft.Radio(value="2 Years", label="2 Years"),
+            ft.Radio(value="3 Years", label="3 Years"),
+        ], alignment="center", spacing=10),
+        value="1 Year",
+        on_change=on_product_tenure_change
+    )
+
+    def open_product_page(title, base_price, desc, features_list):
+        product_detail_title.value = title
+        product_base_cost[0] = base_price
+        product_detail_desc.value = desc
+        product_tenure_radios.value = "1 Year"
+        product_tenure[0] = "1 Year"
+        product_features_col.controls.clear()
+        for f in features_list:
+            product_features_col.controls.append(
+                ft.Row([
+                    ft.Icon("check_circle", color="#059669", size=16),
+                    ft.Text(f, size=11, color="#0F172A", weight="w500")
+                ], spacing=6)
+            )
+        update_product_price()
+        switch_screen("product_detail")
+
+    product_detail_screen = ft.Container(
+        content=ft.Column([
+            ft.Row([
+                ft.IconButton(icon="arrow_back", icon_color="#0F172A", on_click=lambda _: switch_screen("home")),
+                ft.Text("Plan Overview", size=18, weight="bold", color="#0F172A"),
+                ft.IconButton(icon="help_outline", icon_color="#0F172A", on_click=trigger_help_desk)
+            ], alignment="spaceBetween"),
+            ft.Container(
+                content=ft.Column([
+                    product_detail_title,
+                    product_detail_desc,
+                    ft.Divider(height=1),
+                    ft.Text("Included Coverage & Benefits:", size=12, weight="bold", color="#0F172A"),
+                    product_features_col,
+                    ft.Divider(height=1),
+                    ft.Text("Select Duration:", size=12, weight="bold", color="#0F172A"),
+                    product_tenure_radios,
+                    ft.Row([
+                        ft.Text("Total Payable Amount:", size=13, weight="bold", color="#0F172A"),
+                        product_total_cost_txt
+                    ], alignment="spaceBetween"),
+                    ft.Container(height=10),
+                    ft.ElevatedButton(
+                        "Proceed to Buy Policy",
+                        bgcolor="#4F46E5",
+                        color="white",
+                        width=320,
+                        height=48,
+                        on_click=lambda _: open_payment_modal(product_detail_title.value, int(product_total_cost_txt.value.replace("₹", "").replace(",", "")))
+                    )
+                ], spacing=10),
+                padding=20,
+                bgcolor="white",
+                border_radius=16,
+                border=ft.border.all(1.5, "#CBD5E1"),
+                shadow=ft.BoxShadow(blur_radius=12, color="#0F172A08")
+            ),
+            ft.Container(height=20),
+            floating_help_pill
+        ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO),
+        padding=16,
+        expand=True,
+        visible=False
+    )
+
+    # ----------------------------------------------------
     # VEHICLE ENTRY & COMPARISON SCREEN (REFERENCE IMAGE)
     # ----------------------------------------------------
     vehicle_input_txt = ft.TextField(
@@ -510,7 +610,6 @@ def main(page: ft.Page):
             factor = 2.4 if selected_vehicle_type[0] == "Car" else 1.0
             insurers_list_col.controls.append(create_insurer_card(c_name, int(idv * factor), int(p_amt * factor)))
 
-    # Vehicle Plans View (Matching uploaded reference with App Theme)
     vehicle_plans_view = ft.Container(
         content=ft.Column([
             ft.Row([
@@ -611,7 +710,6 @@ def main(page: ft.Page):
         vehicle_entry_screen.content.controls[2].content.controls[1].value = f"Enter {v_type} Number"
         switch_screen("vehicle_entry")
 
-    # Big Prominent Full-Width Vehicle Cards (Home Page Space Fillers)
     big_car_card = ft.Container(
         content=ft.Row([
             ft.Column([
@@ -658,6 +756,7 @@ def main(page: ft.Page):
         on_click=lambda _: open_vehicle_flow("Bike")
     )
 
+    # Interactive Categories Grid (Home, Business, Travel, Cyber)
     other_categories_grid = ft.Row([
         ft.Container(
             content=ft.Column([
@@ -669,7 +768,12 @@ def main(page: ft.Page):
             border_radius=12,
             border=ft.border.all(1, "#E2E8F0"),
             expand=True,
-            on_click=lambda _: toast("Home Insurance Plans available!")
+            on_click=lambda _: open_product_page(
+                "Home Shield Insurance",
+                3200,
+                "Complete fire, flood, earth tremor, and burglary protection for home structures and interior contents.",
+                ["Up to ₹50 Lakhs building cover", "₹10 Lakhs interior furniture protection", "Alternative accommodation allowance", "24x7 Emergency home repairs"]
+            )
         ),
         ft.Container(
             content=ft.Column([
@@ -681,7 +785,12 @@ def main(page: ft.Page):
             border_radius=12,
             border=ft.border.all(1, "#E2E8F0"),
             expand=True,
-            on_click=lambda _: toast("Business Insurance Packages available!")
+            on_click=lambda _: open_product_page(
+                "Business Asset & Liability",
+                5800,
+                "Commercial asset coverage, employee compensation, and stock inventory protection for retail shops & enterprises.",
+                ["Warehouse stock theft cover", "Public liability claim settlement", "Fire & short circuit asset safeguard", "Business interruption loss relief"]
+            )
         ),
         ft.Container(
             content=ft.Column([
@@ -693,8 +802,30 @@ def main(page: ft.Page):
             border_radius=12,
             border=ft.border.all(1, "#E2E8F0"),
             expand=True,
-            on_click=lambda _: toast("International Travel Cover available!")
+            on_click=lambda _: open_product_page(
+                "Global Travel Shield",
+                1150,
+                "International travel health emergencies, baggage delay, and trip cancellation coverage across 150+ countries.",
+                ["$100,000 Cashless hospital network", "Loss of checked-in baggage compensation", "Flight delay & missed connection cover", "Passport loss assistance"]
+            )
         ),
+        ft.Container(
+            content=ft.Column([
+                ft.Icon("lock", color="#DC2626", size=24),
+                ft.Text("Cyber Ins.", size=11, weight="bold", color="#0F172A")
+            ], horizontal_alignment="center", spacing=4),
+            bgcolor="white",
+            padding=10,
+            border_radius=12,
+            border=ft.border.all(1, "#E2E8F0"),
+            expand=True,
+            on_click=lambda _: open_product_page(
+                "Personal Cyber Shield",
+                1490,
+                "Guaranteed financial defense against online phishing, fraudulent UPI transactions, and identity theft damages.",
+                ["₹5 Lakhs digital banking fraud cover", "Identity theft restoration fees", "Cyber extortion & malware assistance", "Legal defense cost reimbursement"]
+            )
+        )
     ], spacing=8)
 
     # ----------------------------------------------------
@@ -748,7 +879,7 @@ def main(page: ft.Page):
     page.overlay.append(payment_sheet)
 
     def open_payment_modal(comp_name, cost):
-        active_buy_title[0] = f"{comp_name} - {selected_vehicle_type[0]} ({current_vehicle_number[0]})"
+        active_buy_title[0] = f"{comp_name} ({selected_vehicle_type[0]})"
         active_buy_amt[0] = cost
         payment_sheet.open = True
         page.update()
@@ -1024,9 +1155,9 @@ def main(page: ft.Page):
         current_policy[0] = v_policy.value.strip()
         current_aadhaar[0] = v_aadhaar.value.strip()
 
-        # Update Circle Initial with Strictly the User's Actual Name
-        first_initial = user_name[0][0].upper() if len(user_name[0]) > 0 else "U"
-        avatar_letter_txt.value = first_initial
+        # Update Circle Initial with Strictly the User's Actual Name First Letter
+        if len(user_name[0]) > 0:
+            avatar_letter_txt.value = user_name[0][0].upper()
         user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
         profile_name_txt.value = f"Name: {user_salutation[0]} {user_name[0]}"
         profile_card_name.value = f"Name: {user_salutation[0]} {user_name[0]}"
@@ -1064,7 +1195,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 2: OTP SCREEN (Starting with Box 1, easily replaceable)
+    # SCREEN 2: OTP SCREEN (Any 4-digit code works, editable replacement)
     # ----------------------------------------------------
     t1 = ft.TextField(width=52, height=54, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     t2 = ft.TextField(width=52, height=54, text_align="center", text_size=22, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
@@ -1166,7 +1297,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # SCREEN 1: LOGIN (Clear dark "+91" prefix & dark text)
+    # SCREEN 1: LOGIN (Updates circle initial on the fly)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1184,6 +1315,12 @@ def main(page: ft.Page):
         border_radius=12
     )
 
+    def on_name_type(e):
+        val = (name_field.value or "").strip()
+        if len(val) > 0:
+            avatar_letter_txt.value = val[0].upper()
+            page.update()
+
     name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -1193,7 +1330,8 @@ def main(page: ft.Page):
         bgcolor="#F8FAFC",
         border_color="#475569",
         color="#0F172A",
-        border_radius=12
+        border_radius=12,
+        on_change=on_name_type
     )
 
     phone_box = ft.TextField(
@@ -1210,7 +1348,7 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    # Permissions Modal - White text on App Deep Theme Background
+    # Permissions Modal
     def show_permissions_and_proceed(m_val, n_val, s_val):
         def on_grant_permissions(e):
             page.dialog.open = False
@@ -1220,8 +1358,8 @@ def main(page: ft.Page):
             v_name.value = n_val
             v_mobile.value = m_val
 
-            # Set user first letter immediately
-            first_initial = n_val[0].upper() if len(n_val) > 0 else "U"
+            # Strictly set user initial
+            first_initial = n_val[0].upper() if len(n_val) > 0 else "S"
             avatar_letter_txt.value = first_initial
             user_greeting_txt.value = f"Hi {user_salutation[0]} {user_name[0]}"
 
@@ -1370,6 +1508,7 @@ def main(page: ft.Page):
         home_screen.visible = (name == "home")
         vehicle_entry_screen.visible = (name == "vehicle_entry")
         vehicle_plans_view.visible = (name == "vehicle_plans")
+        product_detail_screen.visible = (name == "product_detail")
         
         if name == "otp":
             t1.value = ""
@@ -1391,7 +1530,8 @@ def main(page: ft.Page):
             verify_details_screen,
             home_screen,
             vehicle_entry_screen,
-            vehicle_plans_view
+            vehicle_plans_view,
+            product_detail_screen
         ], expand=True)
     )
 
