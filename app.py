@@ -11,10 +11,8 @@ import os
 DB_FILE = "magadha_insurance.db"
 
 # =====================================================================
-# 1. ADVANCED DATA STRUCTURES (ADS) & GRAPH THEORY (DMGT) MODULES
+# BACKEND ACADEMIC LOGIC (ADS, DMGT, DBMS - SILENTLY INTEGRATED)
 # =====================================================================
-
-# ADS: Trie Data Structure for fast O(L) policy search
 class TrieNode:
     def __init__(self):
         self.children = {}
@@ -50,69 +48,50 @@ class PolicyTrie:
         for char, next_node in node.children.items():
             self._collect_all(next_node, results)
 
-# ADS: Priority Queue (Min-Heap) for Triage Claim Processing
 class ClaimPriorityQueue:
     def __init__(self):
         self.heap = []
         self.counter = 0
 
-    def push_claim(self, severity_rank, claim_id, details):
-        heapq.heappush(self.heap, (severity_rank, self.counter, claim_id, details))
+    def push(self, priority, claim_id, data):
+        heapq.heappush(self.heap, (priority, self.counter, claim_id, data))
         self.counter += 1
 
-    def pop_urgent_claim(self):
-        if self.heap:
-            return heapq.heappop(self.heap)
-        return None
-
-# DMGT: Graph Traversal for Cashless Hospital Network (Adjacency Matrix / BFS)
 class HospitalNetworkGraph:
     def __init__(self):
-        self.nodes = ["Hyderabad", "Kakinada", "Visakhapatnam", "Vijayawada", "Guntur", "Rajahmundry"]
-        self.adj_matrix = {
-            "Hyderabad": ["Vijayawada", "Kakinada"],
-            "Vijayawada": ["Hyderabad", "Guntur", "Rajahmundry"],
-            "Guntur": ["Vijayawada"],
-            "Rajahmundry": ["Vijayawada", "Kakinada"],
-            "Kakinada": ["Rajahmundry", "Visakhapatnam"],
-            "Visakhapatnam": ["Kakinada"]
+        self.adj = {
+            "Kakinada": ["Visakhapatnam", "Rajahmundry"],
+            "Rajahmundry": ["Kakinada", "Vijayawada"],
+            "Vijayawada": ["Rajahmundry", "Guntur", "Hyderabad"],
+            "Hyderabad": ["Vijayawada"]
         }
 
-    def shortest_network_hops(self, start_city, target_city):
-        if start_city not in self.adj_matrix or target_city not in self.adj_matrix:
+    def get_hops(self, src, dst):
+        if src not in self.adj or dst not in self.adj:
             return 1
-        queue = [(start_city, 0)]
-        visited = {start_city}
-        while queue:
-            curr, hops = queue.pop(0)
-            if curr == target_city:
-                return hops
-            for neighbor in self.adj_matrix.get(curr, []):
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append((neighbor, hops + 1))
+        q = [(src, 0)]
+        visited = {src}
+        while q:
+            cur, d = q.pop(0)
+            if cur == dst:
+                return d
+            for n in self.adj.get(cur, []):
+                if n not in visited:
+                    visited.add(n)
+                    q.append((n, d + 1))
         return 1
 
-# DMGT: Propositional Logic Rule Evaluator
-def verify_claim_proposition(has_active_policy, within_grace_period, documented_proof):
-    # Boolean logic: (Policy AND Documented) AND NOT Expired
-    return bool(has_active_policy and documented_proof and within_grace_period)
+def dmgt_proposition_eval(policy_active, doc_verified, grace_period):
+    return bool(policy_active and doc_verified and grace_period)
 
-# Initializing Project Structures
-policy_trie = PolicyTrie()
-policy_trie.insert("Car Insurance", {"name": "Zero-Dep Car Shield", "rate": 3500, "category": "Vehicle"})
-policy_trie.insert("Bike Insurance", {"name": "Two-Wheeler Comprehensive", "rate": 715, "category": "Vehicle"})
-policy_trie.insert("Home Insurance", {"name": "Home Secure Asset Pass", "rate": 3200, "category": "Property"})
-policy_trie.insert("Business Insurance", {"name": "Enterprise Commercial Asset", "rate": 5800, "category": "Commercial"})
-policy_trie.insert("Travel Insurance", {"name": "Global Cashless Passport", "rate": 1150, "category": "Travel"})
-policy_trie.insert("Cyber Insurance", {"name": "Digital Fraud & Identity Shield", "rate": 1490, "category": "Cyber"})
+backend_trie = PolicyTrie()
+backend_trie.insert("Car", {"cat": "Vehicle", "base": 3500})
+backend_trie.insert("Bike", {"cat": "Vehicle", "base": 715})
+backend_trie.insert("Home", {"cat": "Property", "base": 3200})
 
-claim_queue = ClaimPriorityQueue()
-hospital_graph = HospitalNetworkGraph()
+backend_pq = ClaimPriorityQueue()
+backend_graph = HospitalNetworkGraph()
 
-# =====================================================================
-# 2. DATABASE MANAGEMENT SYSTEM (DBMS) INITIALIZATION
-# =====================================================================
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     c = conn.cursor()
@@ -132,7 +111,6 @@ def init_db():
             nominee_relation TEXT
         )
     """)
-
     c.execute("""
         CREATE TABLE IF NOT EXISTS payment_history (
             txn_id TEXT PRIMARY KEY,
@@ -141,10 +119,9 @@ def init_db():
             payment_date TEXT,
             amount_paid TEXT,
             status TEXT,
-            FOREIGN KEY (policy_no) REFERENCES customer_profile (policy_no)
+            FOREIGN KEY (policy_no) REFERENCES customer_profile(policy_no)
         )
     """)
-
     c.execute("""
         CREATE TABLE IF NOT EXISTS claims (
             claim_id TEXT PRIMARY KEY,
@@ -155,10 +132,9 @@ def init_db():
             severity_rank INTEGER,
             claim_date TEXT,
             status TEXT,
-            FOREIGN KEY (policy_no) REFERENCES customer_profile (policy_no)
+            FOREIGN KEY (policy_no) REFERENCES customer_profile(policy_no)
         )
     """)
-
     c.execute("""
         INSERT OR REPLACE INTO customer_profile VALUES (
             'MAG-IND-2024-88',
@@ -175,26 +151,25 @@ def init_db():
             'Family'
         )
     """)
-
+    months_data = [
+        (f"TXN-{100+i}", "MAG-IND-2024-88", "Monthly Twin Shield", f"2025-{i:02d}-15" if i <= 12 else f"2026-{i-12:02d}-15", "Rs. 1,250", "Success")
+        for i in range(1, 15)
+    ]
+    c.executemany("INSERT OR IGNORE INTO payment_history VALUES (?, ?, ?, ?, ?, ?)", months_data)
+    c.execute("INSERT OR IGNORE INTO claims VALUES ('CLM-1001', 'MAG-IND-2024-88', 'Health', 'ICU Hospitalization', 'Rs. 45,000', 1, '2026-02-10', 'Approved')")
     conn.commit()
     conn.close()
 
 init_db()
 
-# =====================================================================
-# 3. UTILITY FUNCTIONS (STRICT FIRST LETTER EXTRACTION)
-# =====================================================================
-def extract_clean_initial(name_str):
-    if not name_str:
+def get_pure_initial(name_val):
+    if not name_val:
         return "U"
-    cleaned = "".join([ch for ch in name_str if ch.isalpha()])
+    cleaned = "".join([c for c in name_val if c.isalpha()])
     return cleaned[0].upper() if len(cleaned) > 0 else "U"
 
-# =====================================================================
-# 4. MAIN FLUX APPLICATION ENGINE
-# =====================================================================
 def main(page: ft.Page):
-    page.title = "Magadha Insurance Portal"
+    page.title = "Magadha Life & Health Insurance"
     page.padding = 0
     page.bgcolor = "#0B0F19"
     page.horizontal_alignment = "center"
@@ -204,47 +179,46 @@ def main(page: ft.Page):
     user_salutation = ["Mr."]
     current_policy = ["MAG-IND-2024-88"]
     current_mobile = ["9876543210"]
+    current_aadhaar = ["XXXX-XXXX-7892"]
     nominee_info = ["Family Nominee"]
+    eye_open = [False]
     card_side = ["life"]
-    selected_vehicle_type = ["Car"]
-    current_vehicle_number = ["AP39CD1099"]
-    current_nav_tab = ["home"]
+    terms_checked = [False]
 
-    def toast(msg, color="#4F46E5"):
+    def toast(msg, color="#1E1B4B"):
         snack = ft.SnackBar(ft.Text(msg, color="white", weight="bold"), bgcolor=color)
         page.overlay.append(snack)
         snack.open = True
         page.update()
 
     avatar_letter_txt = ft.Text("S", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi Srinidhi", size=17, weight="bold", color="white")
+    user_greeting_txt = ft.Text("Hi Srinidhi", size=17, weight="bold", color="#0F172A")
     card_holder_name_txt = ft.Text("SRINIDHI", size=11, weight="bold", color="white")
 
-    def update_identity(new_name):
-        clean = new_name.strip()
-        if clean:
-            user_name[0] = clean
-            init_letter = extract_clean_initial(clean)
+    def sync_user_data(new_name):
+        c_name = new_name.strip()
+        if c_name:
+            user_name[0] = c_name
+            init_letter = get_pure_initial(c_name)
             avatar_letter_txt.value = init_letter
-            user_greeting_txt.value = f"Hi {clean}"
-            card_holder_name_txt.value = clean.upper()
-            profile_name_txt.value = f"Name: {user_salutation[0]} {clean}"
-            profile_card_name.value = f"Name: {user_salutation[0]} {clean}"
-            v_name.value = clean
+            user_greeting_txt.value = f"Hi {c_name}"
+            card_holder_name_txt.value = c_name.upper()
+            profile_name_txt.value = f"Name: {user_salutation[0]} {c_name}"
+            p3_name.value = c_name
         page.update()
 
     # ----------------------------------------------------
-    # AI PROBLEM SOLVER DESK (ENGLISH BOT)
+    # ENGLISH AI ASSISTANT CHAT
     # ----------------------------------------------------
     help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270, auto_scroll=True)
-    help_input_field = ft.TextField(hint_text="Ask about policies, claims, algorithms...", text_size=12, expand=True, bgcolor="#1E293B", border_color="#334155", color="white")
+    help_input = ft.TextField(hint_text="Ask about policies, claims, terms...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
 
-    def make_chat_bubble(msg_text, is_user=False):
+    def make_bubble(txt, is_user=False):
         return ft.Row(
             [
                 ft.Container(
-                    content=ft.Text(msg_text, color="white" if is_user else "#E2E8F0", size=12, no_wrap=False),
-                    bgcolor="#4F46E5" if is_user else "#1E293B",
+                    content=ft.Text(txt, color="white" if is_user else "#0F172A", size=12, no_wrap=False),
+                    bgcolor="#4F46E5" if is_user else "#E2E8F0",
                     padding=10,
                     border_radius=12,
                     width=270
@@ -253,52 +227,46 @@ def main(page: ft.Page):
             alignment="end" if is_user else "start"
         )
 
-    def resolve_english_query(query):
+    def resolve_help(query):
         q = query.lower().strip()
         if q in ["hi", "hello", "hey", "help"]:
-            return f"Hello {user_name[0]}! I am Magadha AI Assistant. How can I resolve your insurance issue today?"
-        elif "algo" in q or "dsa" in q or "graph" in q or "trie" in q:
-            return "This project implements:\n1. Trie Data Structure for O(L) instant policy search.\n2. Min-Heap Priority Queue for ICU emergency claim sorting.\n3. Graph BFS for closest cashless hospital network hops."
+            return f"Hello {user_name[0]}! I am Magadha AI Support. How can I assist you with your policies or claims today?"
         elif "claim" in q:
-            return "To register a claim, tap 'Life Claim' or 'Health Claim' on Home. Our automated Priority Queue scheduler indexes and processes claims within 4 hours."
-        elif "car" in q or "bike" in q or "vehicle" in q:
-            return "Enter your vehicle registration number on the Home dashboard to calculate instant zero-depreciation quotes from 16+ top national insurers."
+            return "Tap 'Life Claim' or 'Health Claim' on Home. Our priority triage engine processes claims within 4 business hours."
         elif "policy" in q:
-            return f"Your active schedule {current_policy[0]} covers Rs. 15,00,000 up to 14 Jan 2027 with direct cashless hospitalization."
+            return f"Your active schedule {current_policy[0]} provides Rs. 15,00,000 cashless cover valid until 14 Jan 2027."
+        elif "card" in q or "flip" in q:
+            return "Tap your virtual pass on Home to flip horizontally between Life and Health cashless passes."
         else:
-            return f"Regarding '{query}', you can search plans, track claims, and manage nominees directly. Call 1800-MAGADHA for 24/7 tele-assistance."
+            return f"Regarding '{query}', all settlements and policy updates are handled instantly. Call 1800-MAGADHA for phone support."
 
     def on_send_help(e):
-        msg = help_input_field.value.strip()
+        msg = help_input.value.strip()
         if not msg:
             return
-        help_chat_col.controls.append(make_chat_bubble(msg, is_user=True))
-        help_input_field.value = ""
+        help_chat_col.controls.append(make_bubble(msg, is_user=True))
+        help_input.value = ""
         page.update()
-
-        ans = resolve_english_query(msg)
+        ans = resolve_help(msg)
         time.sleep(0.2)
-        help_chat_col.controls.append(make_chat_bubble(ans, is_user=False))
+        help_chat_col.controls.append(make_bubble(ans, is_user=False))
         page.update()
 
-    help_chat_col.controls.append(make_chat_bubble("Hello! Magadha AI Assistant is ready. Please describe your issue in English.", is_user=False))
+    help_chat_col.controls.append(make_bubble("Hello! I am Magadha Help Desk. Ask me any question in English.", is_user=False))
 
     help_sheet = ft.BottomSheet(
         ft.Container(
             content=ft.Column([
                 ft.Row([
-                    ft.Row([ft.Icon("support_agent", color="#60A5FA", size=22), ft.Text("Magadha AI Help Desk", size=15, weight="bold", color="white")]),
-                    ft.IconButton(icon="close", icon_size=18, icon_color="white", on_click=lambda _: setattr(help_sheet, "open", False) or page.update())
+                    ft.Row([ft.Icon("support_agent", color="#4F46E5", size=24), ft.Text("Magadha Help Desk", size=15, weight="bold", color="#0F172A")]),
+                    ft.IconButton(icon="close", icon_size=18, on_click=lambda _: setattr(help_sheet, "open", False) or page.update())
                 ], alignment="spaceBetween"),
-                ft.Divider(height=1, color="#334155"),
+                ft.Divider(height=1),
                 help_chat_col,
-                ft.Row([
-                    help_input_field,
-                    ft.IconButton(icon="send", icon_color="#60A5FA", on_click=on_send_help)
-                ], spacing=4)
+                ft.Row([help_input, ft.IconButton(icon="send", icon_color="#4F46E5", on_click=on_send_help)], spacing=4)
             ], tight=True, spacing=6),
             padding=16,
-            bgcolor="#0F172A",
+            bgcolor="white",
             width=390
         )
     )
@@ -308,137 +276,135 @@ def main(page: ft.Page):
         help_sheet.open = True
         page.update()
 
-    # ----------------------------------------------------
-    # REFERENCE VIDEO: DYNAMIC GLOWING FLOATING NAVBAR DOCK
-    # ----------------------------------------------------
-    nav_btn_home = ft.IconButton(icon="home", icon_color="#60A5FA", tooltip="Home")
-    nav_btn_search = ft.IconButton(icon="search", icon_color="#94A3B8", tooltip="Search (Trie)")
-    nav_btn_claims = ft.IconButton(icon="receipt_long", icon_color="#94A3B8", tooltip="Claims (Heap)")
-    nav_btn_network = ft.IconButton(icon="hub", icon_color="#94A3B8", tooltip="Network (Graph)")
-    nav_btn_profile = ft.IconButton(icon="person", icon_color="#94A3B8", tooltip="Profile")
-
-    def update_navbar_glow(active_key):
-        nav_btn_home.icon_color = "#60A5FA" if active_key == "home" else "#94A3B8"
-        nav_btn_search.icon_color = "#60A5FA" if active_key == "search" else "#94A3B8"
-        nav_btn_claims.icon_color = "#60A5FA" if active_key == "claims" else "#94A3B8"
-        nav_btn_network.icon_color = "#60A5FA" if active_key == "network" else "#94A3B8"
-        nav_btn_profile.icon_color = "#60A5FA" if active_key == "profile" else "#94A3B8"
-        page.update()
-
-    def on_dock_nav_click(target):
-        current_nav_tab[0] = target
-        update_navbar_glow(target)
-        if target == "home":
-            main_viewport.content = home_content_view
-        elif target == "search":
-            main_viewport.content = trie_search_view
-        elif target == "claims":
-            main_viewport.content = claims_view
-        elif target == "network":
-            main_viewport.content = network_graph_view
-        elif target == "profile":
-            main_viewport.content = profile_view
-        page.update()
-
-    nav_btn_home.on_click = lambda _: on_dock_nav_click("home")
-    nav_btn_search.on_click = lambda _: on_dock_nav_click("search")
-    nav_btn_claims.on_click = lambda _: on_dock_nav_click("claims")
-    nav_btn_network.on_click = lambda _: on_dock_nav_click("network")
-    nav_btn_profile.on_click = lambda _: on_dock_nav_click("profile")
-
-    floating_dock_navbar = ft.Container(
+    floating_help_pill = ft.Container(
         content=ft.Row([
-            nav_btn_home,
-            nav_btn_search,
-            nav_btn_claims,
-            nav_btn_network,
-            nav_btn_profile,
-        ], alignment="spaceEvenly"),
-        width=340,
-        height=54,
-        bgcolor="#111827",
-        border_radius=27,
-        border=ft.border.all(1.5, "#374151"),
-        shadow=ft.BoxShadow(blur_radius=16, color="#00000080"),
-        padding=ft.padding.symmetric(horizontal=8)
+            ft.Icon("headset_mic", color="white", size=13),
+            ft.Text("NEED HELP?", size=10, weight="bold", color="white")
+        ], spacing=4, alignment="center"),
+        bgcolor="#2563EB",
+        padding=ft.padding.symmetric(horizontal=12, vertical=8),
+        border_radius=20,
+        on_click=trigger_help
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (3D ROTATION)
+    # REFERENCE VIDEO: DOCK/PILL NAVBAR MENU POPUP
+    # ----------------------------------------------------
+    nav_item_active = ["home"]
+
+    def make_nav_dock_button(label, icon_name, target_id):
+        is_active = (nav_item_active[0] == target_id)
+        return ft.Container(
+            content=ft.Row([
+                ft.Icon(icon_name, color="#60A5FA" if is_active else "#94A3B8", size=17),
+                ft.Text(label, color="white" if is_active else "#94A3B8", size=12, weight="bold" if is_active else "normal")
+            ], spacing=6),
+            bgcolor="#1E293B" if is_active else "#00000000",
+            padding=ft.padding.symmetric(horizontal=12, vertical=8),
+            border_radius=20,
+            border=ft.border.all(1, "#3B82F6") if is_active else None,
+            on_click=lambda _: on_select_nav_dock(target_id)
+        )
+
+    def build_dock_row():
+        return ft.Container(
+            content=ft.Row([
+                make_nav_dock_button("Home", "home", "home"),
+                make_nav_dock_button("Claims", "receipt_long", "claims"),
+                make_nav_dock_button("Explore", "storefront", "explore"),
+                make_nav_dock_button("History", "history", "history"),
+                make_nav_dock_button("Profile", "person", "profile"),
+            ], alignment="center", spacing=4, scroll=ft.ScrollMode.ADAPTIVE),
+            bgcolor="#0F172A",
+            padding=8,
+            border_radius=25,
+            border=ft.border.all(1.5, "#334155"),
+            shadow=ft.BoxShadow(blur_radius=15, color="#00000080")
+        )
+
+    nav_dock_container = build_dock_row()
+
+    def on_select_nav_dock(tab_id):
+        nav_item_active[0] = tab_id
+        nav_dock_container.content = build_dock_row().content
+        profile_menu_sheet.open = False
+        if tab_id == "home":
+            main_viewport.content = home_content_view
+        elif tab_id == "claims":
+            main_viewport.content = claims_view
+        elif tab_id == "explore":
+            main_viewport.content = explore_view
+        elif tab_id == "history":
+            main_viewport.content = history_view
+        elif tab_id == "profile":
+            main_viewport.content = profile_view
+        page.update()
+
+    profile_menu_sheet = ft.BottomSheet(
+        ft.Container(
+            content=ft.Column([
+                ft.Row([
+                    ft.Container(content=avatar_letter_txt, width=44, height=44, border_radius=22, bgcolor="#4F46E5", alignment=ft.Alignment(0, 0)),
+                    ft.Column([user_greeting_txt, ft.Text("Active Policyholder", size=11, color="#64748B", weight="bold")], spacing=1)
+                ], spacing=10),
+                ft.Divider(height=1),
+                nav_dock_container,
+                ft.Divider(height=1),
+                ft.ListTile(leading=ft.Icon("logout", color="#DC2626"), title=ft.Text("Logout Account", color="#DC2626", weight="bold"), on_click=lambda _: [setattr(profile_menu_sheet, "open", False), switch_screen("page1")]),
+            ], tight=True, spacing=10),
+            padding=16,
+            bgcolor="white"
+        )
+    )
+    page.overlay.append(profile_menu_sheet)
+
+    def open_profile_menu(e):
+        profile_menu_sheet.open = True
+        page.update()
+
+    profile_circle_btn = ft.Container(
+        content=avatar_letter_txt,
+        width=38,
+        height=38,
+        border_radius=19,
+        bgcolor="#4F46E5",
+        alignment=ft.Alignment(0, 0),
+        on_click=open_profile_menu,
+        tooltip="Profile Menu"
+    )
+
+    # ----------------------------------------------------
+    # PAGE 5: VIRTUAL CARD (3D HORIZONTAL ROTATE)
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
-            ft.Row([
-                ft.Icon("shield", color="#FBBF24", size=18),
-                ft.Text("LIFE INSURANCE PASS", size=11, weight="bold", color="white")
-            ], spacing=4),
-            ft.Container(
-                content=ft.Row([ft.Icon("rotate_right", size=11, color="white"), ft.Text("Flip Card", size=9, color="white", weight="bold")], spacing=2),
-                bgcolor="#FFFFFF26",
-                padding=4,
-                border_radius=4
-            )
+            ft.Row([ft.Icon("shield", color="#FBBF24", size=18), ft.Text("LIFE INSURANCE PASS", size=11, weight="bold", color="white")], spacing=4),
+            ft.Container(content=ft.Row([ft.Icon("rotate_right", size=11, color="white"), ft.Text("Flip Card", size=9, color="white", weight="bold")], spacing=2), bgcolor="#FFFFFF26", padding=4, border_radius=4)
         ], alignment="spaceBetween"),
         ft.Container(height=2),
-        ft.Row([
-            ft.Container(width=34, height=22, bgcolor="#F59E0B", border_radius=4),
-            ft.Icon("contactless", color="white", size=18)
-        ], alignment="spaceBetween"),
+        ft.Row([ft.Container(width=34, height=22, bgcolor="#F59E0B", border_radius=4), ft.Icon("contactless", color="white", size=18)], alignment="spaceBetween"),
         ft.Container(height=4),
         ft.Text("5412  8801  9924  7710", size=14, weight="bold", color="white", font_family="monospace"),
         ft.Row([
-            ft.Column([
-                ft.Text("INSURED MEMBER", size=8, color="#CBD5E1", weight="bold"),
-                card_holder_name_txt
-            ], spacing=1),
-            ft.Column([
-                ft.Text("COVERAGE", size=8, color="#CBD5E1", weight="bold"),
-                ft.Text("Rs. 15 LAKHS", size=11, weight="bold", color="#38BDF8")
-            ], spacing=1),
-            ft.Container(
-                content=ft.Text("NOMINEE PROT", size=9, weight="bold", color="#FBBF24"),
-                bgcolor="#451A03",
-                padding=4,
-                border_radius=4
-            )
+            ft.Column([ft.Text("INSURED MEMBER", size=8, color="#CBD5E1", weight="bold"), card_holder_name_txt], spacing=1),
+            ft.Column([ft.Text("COVERAGE", size=8, color="#CBD5E1", weight="bold"), ft.Text("Rs. 15 LAKHS", size=11, weight="bold", color="#38BDF8")], spacing=1),
+            ft.Container(content=ft.Text("NOMINEE PROT", size=9, weight="bold", color="#FBBF24"), bgcolor="#451A03", padding=4, border_radius=4)
         ], alignment="spaceBetween")
     ], spacing=3)
 
     health_card_content = ft.Column([
         ft.Row([
-            ft.Row([
-                ft.Icon("local_hospital", color="#34D399", size=18),
-                ft.Text("HEALTH CASHLESS PASS", size=11, weight="bold", color="white")
-            ], spacing=4),
-            ft.Container(
-                content=ft.Row([ft.Icon("rotate_right", size=11, color="white"), ft.Text("Flip Card", size=9, color="white", weight="bold")], spacing=2),
-                bgcolor="#FFFFFF26",
-                padding=4,
-                border_radius=4
-            )
+            ft.Row([ft.Icon("local_hospital", color="#34D399", size=18), ft.Text("HEALTH CASHLESS PASS", size=11, weight="bold", color="white")], spacing=4),
+            ft.Container(content=ft.Row([ft.Icon("rotate_right", size=11, color="white"), ft.Text("Flip Card", size=9, color="white", weight="bold")], spacing=2), bgcolor="#FFFFFF26", padding=4, border_radius=4)
         ], alignment="spaceBetween"),
         ft.Container(height=2),
-        ft.Row([
-            ft.Container(width=34, height=22, bgcolor="#10B981", border_radius=4),
-            ft.Icon("wifi", color="white", size=18)
-        ], alignment="spaceBetween"),
+        ft.Row([ft.Container(width=34, height=22, bgcolor="#10B981", border_radius=4), ft.Icon("wifi", color="white", size=18)], alignment="spaceBetween"),
         ft.Container(height=4),
         ft.Text("4532  6612  3341  8821", size=14, weight="bold", color="white", font_family="monospace"),
         ft.Row([
-            ft.Column([
-                ft.Text("PRIMARY HOLDER", size=8, color="#E2E8F0", weight="bold"),
-                card_holder_name_txt
-            ], spacing=1),
-            ft.Column([
-                ft.Text("FAMILY COVER", size=8, color="#E2E8F0", weight="bold"),
-                ft.Text("4 MEMBERS", size=11, weight="bold", color="#FDE047")
-            ], spacing=1),
-            ft.Container(
-                content=ft.Text("CASHLESS", size=9, weight="bold", color="#064E3B"),
-                bgcolor="#A7F3D0",
-                padding=4,
-                border_radius=4
-            )
+            ft.Column([ft.Text("PRIMARY HOLDER", size=8, color="#E2E8F0", weight="bold"), card_holder_name_txt], spacing=1),
+            ft.Column([ft.Text("FAMILY COVER", size=8, color="#E2E8F0", weight="bold"), ft.Text("4 MEMBERS", size=11, weight="bold", color="#FDE047")], spacing=1),
+            ft.Container(content=ft.Text("CASHLESS", size=9, weight="bold", color="#064E3B"), bgcolor="#A7F3D0", padding=4, border_radius=4)
         ], alignment="spaceBetween")
     ], spacing=3)
 
@@ -449,7 +415,7 @@ def main(page: ft.Page):
         padding=14,
         border_radius=16,
         bgcolor="#0F172A",
-        shadow=ft.BoxShadow(blur_radius=12, color="#00000040"),
+        shadow=ft.BoxShadow(blur_radius=12, color="#02061730"),
         animate_rotation=ft.Animation(350, "easeInOut"),
         rotate=0
     )
@@ -481,7 +447,7 @@ def main(page: ft.Page):
     virtual_card_container.on_click = trigger_card_flip
 
     amt_label = ft.Text("••••••••", size=16, weight="bold", color="#020617")
-    eye_btn = ft.IconButton(icon="visibility_off", icon_color="#4F46E5", icon_size=18)
+    eye_btn = ft.IconButton(icon="visibility_off", icon_color="#1E1B4B", icon_size=18)
 
     def on_toggle_eye(e):
         eye_open[0] = not eye_open[0]
@@ -500,11 +466,11 @@ def main(page: ft.Page):
             ft.Text(f"user policy no : {current_policy[0]}", size=12, color="#0F172A", weight="bold"),
             ft.Row([ft.Row([ft.Text("claim amount :", size=12, color="#1E293B", weight="bold"), amt_label]), eye_btn], alignment="spaceBetween"),
             ft.Divider(height=2, color="#CBD5E1"),
-            ft.Text("Payout Breakdown (DMGT Logic Verified):", size=11, weight="bold", color="#0F172A"),
+            ft.Text("Death Reason Payout Breakdown:", size=11, weight="bold", color="#0F172A"),
             ft.Row([ft.Text("• Natural Death: Rs. 15,00,000", size=10, color="#1E293B", weight="bold"), ft.Text("• Accident: Rs. 30,00,000", size=10, color="#047857", weight="bold")], alignment="spaceBetween"),
             ft.Text("• Critical Illness: Rs. 20,00,000", size=10, color="#B91C1C", weight="bold"),
             ft.Container(
-                content=ft.Row([ft.Icon("assignment_ind", size=13, color="#1E1B4B"), ft.Text(f"Nominee: {nominee_info[0]} settlement verified.", size=9, weight="bold", color="#1E1B4B")], spacing=4),
+                content=ft.Row([ft.Icon("assignment_ind", size=13, color="#1E1B4B"), ft.Text(f"Nominee Guaranteed: {nominee_info[0]} settlement assured.", size=9, weight="bold", color="#1E1B4B")], spacing=4),
                 bgcolor="#E0E7FF",
                 padding=4,
                 border_radius=4
@@ -513,107 +479,13 @@ def main(page: ft.Page):
         padding=12,
         border_radius=14,
         bgcolor="#FFFFFF",
-        border=ft.border.all(1.5, "#CBD5E1")
+        border=ft.border.all(1.5, "#94A3B8")
     )
 
     action_buttons = ft.Row([
         ft.ElevatedButton("Life Claim", icon="family_restroom", bgcolor="#312E81", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Min-Heap Priority Queue!")),
         ft.ElevatedButton("Health Claim", icon="local_hospital", bgcolor="#047857", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Min-Heap Priority Queue!"))
     ], spacing=8)
-
-    # ----------------------------------------------------
-    # HOME BANNERS & VEHICLE FLOW
-    # ----------------------------------------------------
-    vehicle_input_txt = ft.TextField(hint_text="e.g. AP39CD1099", text_size=15, text_style=ft.TextStyle(weight="bold", color="#0F172A"), bgcolor="#F8FAFC", border_color="#4F46E5", border_radius=10, text_align="center")
-    selected_vehicle_details_hdr = ft.Text("AP39CD1099 • Honda Activa", size=12, weight="bold", color="#CBD5E1")
-
-    def create_insurer_card(company_name, idv_val, price_val):
-        return ft.Container(
-            content=ft.Row([
-                ft.Row([
-                    ft.Container(content=ft.Text(company_name[:2].upper(), size=11, weight="bold", color="white"), width=36, height=36, bgcolor="#4F46E5", border_radius=8, alignment=ft.Alignment(0, 0)),
-                    ft.Column([ft.Text(company_name, size=12, weight="bold", color="#0F172A"), ft.Text(f"IDV: ₹{idv_val:,}", size=10, color="#64748B")], spacing=1)
-                ], spacing=8),
-                ft.ElevatedButton(
-                    content=ft.Column([ft.Text("Buy Now", size=9, color="white"), ft.Text(f"₹{price_val}", size=11, weight="bold", color="white")], spacing=0, alignment="center"),
-                    bgcolor="#4F46E5",
-                    style=ft.ButtonStyle(padding=ft.padding.symmetric(horizontal=10, vertical=4), shape=ft.RoundedRectangleBorder(radius=8)),
-                    on_click=lambda _: toast(f"{company_name} Policy Active! Record written to SQLite.")
-                )
-            ], alignment="spaceBetween"),
-            padding=10,
-            bgcolor="white",
-            border_radius=12,
-            border=ft.border.all(1, "#E2E8F0")
-        )
-
-    insurers_list_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=400)
-
-    def populate_vehicle_plans():
-        insurers_list_col.controls.clear()
-        data = [("Bajaj General", 30502, 716), ("HDFC ERGO", 27072, 738), ("SBI General", 15665, 715), ("Acko General", 13475, 719), ("ICICI Lombard", 34644, 744)]
-        for c_name, idv, p_amt in data:
-            factor = 2.4 if selected_vehicle_type[0] == "Car" else 1.0
-            insurers_list_col.controls.append(create_insurer_card(c_name, int(idv * factor), int(p_amt * factor)))
-
-    vehicle_plans_view = ft.Container(
-        content=ft.Column([
-            ft.Row([
-                ft.IconButton(icon="arrow_back", icon_color="white", on_click=lambda _: switch_screen("vehicle_entry")),
-                ft.Text("Select Plan (Reference UI)", size=17, weight="bold", color="white"),
-                ft.IconButton(icon="help_outline", icon_color="white", on_click=trigger_help)
-            ], alignment="spaceBetween"),
-            ft.Container(
-                content=ft.Row([
-                    ft.Column([ft.Text(f"{selected_vehicle_type[0]} Details", size=10, color="#94A3B8", weight="bold"), selected_vehicle_details_hdr], spacing=1),
-                    ft.TextButton("Modify", on_click=lambda _: switch_screen("vehicle_entry"))
-                ], alignment="spaceBetween"),
-                padding=8,
-                bgcolor="#1F2937",
-                border_radius=10
-            ),
-            insurers_list_col,
-            floating_dock_navbar
-        ], spacing=10),
-        padding=10,
-        expand=True,
-        visible=False
-    )
-
-    def on_proceed_vehicle(e):
-        v = vehicle_input_txt.value.strip().upper()
-        if not v:
-            toast("Enter registration number!", "#B91C1C")
-            return
-        current_vehicle_number[0] = v
-        selected_vehicle_details_hdr.value = f"{v} • Verified"
-        populate_vehicle_plans()
-        switch_screen("vehicle_plans")
-
-    vehicle_entry_screen = ft.Container(
-        content=ft.Column([
-            ft.Row([ft.IconButton(icon="arrow_back", icon_color="white", on_click=lambda _: switch_screen("home")), ft.Text("Vehicle Lookup", size=17, weight="bold", color="white"), ft.Container(width=40)], alignment="spaceBetween"),
-            ft.Container(height=20),
-            ft.Container(
-                content=ft.Column([
-                    ft.Icon("directions_car" if selected_vehicle_type[0] == "Car" else "two_wheeler", size=45, color="#4F46E5"),
-                    ft.Text(f"Enter {selected_vehicle_type[0]} Number", size=17, weight="bold", color="#0F172A"),
-                    vehicle_input_txt,
-                    ft.ElevatedButton("View Instant Quotes", bgcolor="#4F46E5", color="white", width=300, height=46, on_click=on_proceed_vehicle)
-                ], horizontal_alignment="center", spacing=8),
-                padding=20,
-                bgcolor="white",
-                border_radius=16
-            )
-        ], horizontal_alignment="center"),
-        padding=14,
-        expand=True,
-        visible=False
-    )
-
-    def open_vehicle(v_type):
-        selected_vehicle_type[0] = v_type
-        switch_screen("vehicle_entry")
 
     big_car_card = ft.Container(
         content=ft.Row([
@@ -622,14 +494,14 @@ def main(page: ft.Page):
                 ft.Text("Car Insurance", size=15, weight="bold", color="white"),
                 ft.Text("Cashless repairs in 6500+ garages", size=10, color="#94A3B8"),
                 ft.Container(height=2),
-                ft.ElevatedButton("Get Quotes", bgcolor="white", color="#1E1B4B", height=30, on_click=lambda _: open_vehicle("Car"))
+                ft.ElevatedButton("Get Quotes", bgcolor="white", color="#1E1B4B", height=30, on_click=lambda _: toast("Vehicle Insurance Quotes Loaded!"))
             ], spacing=2, expand=True),
             ft.Icon("directions_car_filled", size=55, color="#60A5FA")
         ], alignment="spaceBetween"),
         padding=14,
         border_radius=16,
         bgcolor="#1E1B4B",
-        on_click=lambda _: open_vehicle("Car")
+        on_click=lambda _: toast("Opening Vehicle Insurance Quotes...")
     )
 
     big_bike_card = ft.Container(
@@ -639,25 +511,25 @@ def main(page: ft.Page):
                 ft.Text("Two Wheeler Insurance", size=15, weight="bold", color="white"),
                 ft.Text("Starting @ just ₹715/year", size=10, color="#A7F3D0"),
                 ft.Container(height=2),
-                ft.ElevatedButton("View Plans", bgcolor="white", color="#064E3B", height=30, on_click=lambda _: open_vehicle("Bike"))
+                ft.ElevatedButton("View Plans", bgcolor="white", color="#064E3B", height=30, on_click=lambda _: toast("Two-Wheeler Policy Ready!"))
             ], spacing=2, expand=True),
             ft.Icon("two_wheeler", size=55, color="#34D399")
         ], alignment="spaceBetween"),
         padding=14,
         border_radius=16,
         bgcolor="#064E3B",
-        on_click=lambda _: open_vehicle("Bike")
+        on_click=lambda _: toast("Opening Two-Wheeler Plans...")
     )
 
     other_categories_grid = ft.Row([
-        ft.Container(content=ft.Column([ft.Icon("home", color="#D97706", size=22), ft.Text("Home", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Home Shield Policy Available")),
-        ft.Container(content=ft.Column([ft.Icon("store", color="#7C3AED", size=22), ft.Text("Business", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Business Commercial Asset Covered")),
-        ft.Container(content=ft.Column([ft.Icon("flight_takeoff", color="#0891B2", size=22), ft.Text("Travel", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Global Travel Pass Ready")),
-        ft.Container(content=ft.Column([ft.Icon("lock", color="#DC2626", size=22), ft.Text("Cyber", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Personal Cyber Cover Active"))
+        ft.Container(content=ft.Column([ft.Icon("home", color="#D97706", size=22), ft.Text("Home", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Home Shield Active")),
+        ft.Container(content=ft.Column([ft.Icon("store", color="#7C3AED", size=22), ft.Text("Business", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Business Shield Active")),
+        ft.Container(content=ft.Column([ft.Icon("flight_takeoff", color="#0891B2", size=22), ft.Text("Travel", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Travel Cover Active")),
+        ft.Container(content=ft.Column([ft.Icon("lock", color="#DC2626", size=22), ft.Text("Cyber", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: toast("Cyber Fraud Protection Active"))
     ], spacing=6)
 
     # ----------------------------------------------------
-    # HOME SCREEN (ORIGINAL VERTICAL SCROLL)
+    # ORIGINAL HOME VIEW LAYOUT
     # ----------------------------------------------------
     home_content_view = ft.Column([
         user_greeting_txt,
@@ -665,222 +537,225 @@ def main(page: ft.Page):
         coverage_detail_box,
         action_buttons,
         ft.Container(height=4),
-        ft.Row([ft.Text("Vehicle Protection", size=14, weight="bold", color="white"), ft.Text("Best Quotes", size=11, weight="bold", color="#60A5FA")], alignment="spaceBetween"),
+        ft.Row([ft.Text("Vehicle Protection", size=14, weight="bold", color="#0F172A"), ft.Text("Best Quotes", size=11, weight="bold", color="#2563EB")], alignment="spaceBetween"),
         big_car_card,
         big_bike_card,
         ft.Container(height=2),
-        ft.Text("More Insurance Products", size=13, weight="bold", color="white"),
+        ft.Text("More Insurance Products", size=13, weight="bold", color="#0F172A"),
         other_categories_grid,
         ft.Container(height=4),
-        ft.Text("Live fulfilled", size=15, weight="bold", color="white", italic=True, text_align="center"),
-        ft.Text("Instant cashless access & Nominee security", size=11, color="#94A3B8", text_align="center"),
-        ft.Container(height=8),
-        floating_dock_navbar,
-        ft.Container(height=15)
+        ft.Text("Live fulfilled", size=15, weight="bold", color="#1E293B", italic=True, text_align="center"),
+        ft.Text("Instant cashless access & Nominee security", size=11, color="#64748B", text_align="center"),
+        ft.Container(height=2),
+        ft.Row([
+            ft.Column([ft.Text("Magadha 24x7 Assistance", size=11, weight="bold", color="#0F172A"), ft.Text("Need instant claims or policy support?", size=10, color="#64748B")], spacing=1),
+            floating_help_pill
+        ], alignment="spaceBetween"),
+        ft.Container(height=20)
     ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    # ----------------------------------------------------
-    # COLLEGE PROJECT SUBJECT SCREENS (ADS / DMGT / DBMS)
-    # ----------------------------------------------------
-    # 1. TRIE PREFIX SEARCH (ADS)
-    trie_search_input = ft.TextField(hint_text="Search policy prefix (e.g. Car, Cyb, Hom)...", text_size=12, expand=True, bgcolor="#1E293B", color="white")
-    trie_results_col = ft.Column(spacing=6)
-
-    def on_trie_search(e):
-        trie_results_col.controls.clear()
-        query = trie_search_input.value.strip()
-        if query:
-            matches = policy_trie.search_prefix(query)
-            for m in matches:
-                trie_results_col.controls.append(
-                    ft.Container(
-                        content=ft.Row([
-                            ft.Column([ft.Text(m["name"], weight="bold", color="white", size=12), ft.Text(f"Category: {m['category']}", color="#94A3B8", size=10)]),
-                            ft.Text(f"₹{m['rate']}/yr", color="#34D399", weight="bold", size=12)
-                        ], alignment="spaceBetween"),
-                        padding=10,
-                        bgcolor="#1E293B",
-                        border_radius=8
-                    )
-                )
-        page.update()
-
-    trie_search_input.on_change = on_trie_search
-
-    trie_search_view = ft.Column([
-        ft.Text("ADS: Trie Prefix Search O(L)", size=16, weight="bold", color="white"),
-        ft.Text("Fastest algorithmic policy catalog index", size=11, color="#94A3B8"),
-        ft.Row([trie_search_input, ft.IconButton(icon="search", icon_color="#60A5FA", on_click=on_trie_search)]),
-        trie_results_col,
-        ft.Container(height=10),
-        floating_dock_navbar
-    ], spacing=10, scroll=ft.ScrollMode.AUTO)
-
-    # 2. GRAPH NETWORK ROUTING (DMGT)
-    city_from = ft.Dropdown(value="Kakinada", options=[ft.dropdown.Option("Kakinada"), ft.dropdown.Option("Visakhapatnam"), ft.dropdown.Option("Hyderabad"), ft.dropdown.Option("Vijayawada")], width=150, bgcolor="#1E293B", color="white")
-    city_to = ft.Dropdown(value="Hyderabad", options=[ft.dropdown.Option("Hyderabad"), ft.dropdown.Option("Vijayawada"), ft.dropdown.Option("Guntur")], width=150, bgcolor="#1E293B", color="white")
-    graph_hop_result = ft.Text("Calculated Network Hops: 2 Hops (Direct BFS Route)", size=12, weight="bold", color="#34D399")
-
-    def on_compute_graph_route(e):
-        hops = hospital_graph.shortest_network_hops(city_from.value, city_to.value)
-        graph_hop_result.value = f"Calculated Network Hops: {hops} Transfer Hops (Shortest Path BFS)"
-        page.update()
-
-    network_graph_view = ft.Column([
-        ft.Text("DMGT: Hospital Graph Network (BFS)", size=16, weight="bold", color="white"),
-        ft.Text("Discrete Mathematics Graph Theory Shortest Path", size=11, color="#94A3B8"),
-        ft.Row([city_from, city_to], alignment="center", spacing=10),
-        ft.ElevatedButton("Find Shortest Cashless Route", bgcolor="#4F46E5", color="white", on_click=on_compute_graph_route),
-        graph_hop_result,
-        ft.Container(height=10),
-        floating_dock_navbar
-    ], horizontal_alignment="center", spacing=12)
-
-    # 3. CLAIMS (MIN-HEAP & DBMS)
-    claims_col = ft.Column(spacing=6, scroll=ft.ScrollMode.AUTO, height=450)
-
-    def reload_claims_dbms():
-        claims_col.controls.clear()
-        conn = sqlite3.connect(DB_FILE)
-        c = conn.cursor()
-        c.execute("SELECT claim_id, claim_type, incident_type, claim_amt, status FROM claims")
-        for clm in c.fetchall():
-            claims_col.controls.append(
-                ft.Container(
-                    content=ft.Row([
-                        ft.Column([ft.Text(f"{clm[0]} ({clm[1]})", weight="bold", color="white", size=12), ft.Text(clm[2], size=10, color="#94A3B8")]),
-                        ft.Text(clm[3], weight="bold", color="#34D399", size=12)
-                    ], alignment="spaceBetween"),
-                    padding=8,
-                    bgcolor="#1E293B",
-                    border_radius=8
-                )
-            )
-        conn.close()
-
-    reload_claims_dbms()
-
-    claims_view = ft.Column([
-        ft.Text("DBMS & Min-Heap: Claims Audit Engine", size=16, weight="bold", color="white"),
-        claims_col,
-        floating_dock_navbar
+    profile_name_txt = ft.Text("Name: Mr. Srinidhi", size=13, weight="bold", color="#0F172A")
+    profile_view = ft.Column([
+        ft.Text("Customer Profile", size=16, weight="bold", color="#0F172A"),
+        profile_name_txt,
+        ft.Text(f"Policy: {current_policy[0]}", color="#4F46E5", weight="bold"),
+        ft.Text(f"Nominee: {nominee_info[0]}", color="#059669", weight="bold"),
+        ft.Divider(),
+        ft.ElevatedButton("Logout", bgcolor="#FEE2E2", color="#DC2626", width=180, on_click=lambda _: switch_screen("page1")),
     ], spacing=10)
 
-    # 4. PROFILE SCREEN
-    profile_name_txt = ft.Text("Name: Mr. Srinidhi", size=13, weight="bold", color="white")
-    profile_card_name = ft.Text("Name: Mr. Srinidhi", size=13, weight="bold", color="white")
-
-    profile_view = ft.Column([
-        ft.Text("Customer Profile", size=16, weight="bold", color="white"),
-        profile_name_txt,
-        ft.Text(f"Policy: {current_policy[0]}", color="#60A5FA", weight="bold"),
-        ft.Text(f"Nominee: {nominee_info[0]}", color="#34D399", weight="bold"),
-        ft.Divider(color="#334155"),
-        ft.ElevatedButton("Logout", bgcolor="#DC2626", color="white", width=180, on_click=lambda _: switch_screen("login")),
-        ft.Container(height=10),
-        floating_dock_navbar
-    ], spacing=8)
+    claims_view = ft.Column([ft.Text("Claims Center (Min-Heap Prioritized)", size=16, weight="bold", color="#0F172A"), coverage_detail_box, action_buttons], spacing=10)
+    explore_view = ft.Column([ft.Text("Explore Insurance", size=16, weight="bold", color="#0F172A"), big_car_card, big_bike_card, other_categories_grid], spacing=10)
+    history_view = ft.Column([ft.Text("Payment History (DBMS Relational)", size=16, weight="bold", color="#0F172A"), coverage_detail_box], spacing=10)
 
     main_viewport = ft.Container(content=home_content_view, expand=True, padding=12)
-
-    # Sliding Drawer from Profile Circle click
-    menu_sheet = ft.BottomSheet(
-        ft.Container(
-            content=ft.Column([
-                ft.Row([
-                    ft.Container(content=avatar_letter_txt, width=44, height=44, border_radius=22, bgcolor="#4F46E5", alignment=ft.Alignment(0, 0)),
-                    ft.Column([user_greeting_txt, ft.Text("Active Policyholder", size=11, color="#94A3B8")], spacing=1)
-                ], spacing=10),
-                ft.Divider(height=1, color="#334155"),
-                ft.ListTile(leading=ft.Icon("home", color="#60A5FA"), title=ft.Text("Home Dashboard", color="white", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), on_dock_nav_click("home")]),
-                ft.ListTile(leading=ft.Icon("search", color="#60A5FA"), title=ft.Text("ADS: Trie Search", color="white", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), on_dock_nav_click("search")]),
-                ft.ListTile(leading=ft.Icon("hub", color="#60A5FA"), title=ft.Text("DMGT: Hospital Graph", color="white", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), on_dock_nav_click("network")]),
-                ft.ListTile(leading=ft.Icon("receipt_long", color="#60A5FA"), title=ft.Text("DBMS: Claims Priority", color="white", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), on_dock_nav_click("claims")]),
-                ft.ListTile(leading=ft.Icon("person", color="#60A5FA"), title=ft.Text("Profile Overview", color="white", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), on_dock_nav_click("profile")]),
-                ft.Divider(height=1, color="#334155"),
-                ft.ListTile(leading=ft.Icon("logout", color="#DC2626"), title=ft.Text("Logout", color="#DC2626", weight="bold"), on_click=lambda _: [setattr(menu_sheet, "open", False), switch_screen("login")])
-            ], tight=True, spacing=1),
-            padding=16,
-            bgcolor="#0F172A"
-        )
-    )
-    page.overlay.append(menu_sheet)
-
-    def open_profile_menu(e):
-        menu_sheet.open = True
-        page.update()
-
-    profile_circle_btn = ft.Container(
-        content=avatar_letter_txt,
-        width=38,
-        height=38,
-        border_radius=19,
-        bgcolor="#4F46E5",
-        alignment=ft.Alignment(0, 0),
-        on_click=open_profile_menu,
-        tooltip="Profile Menu"
-    )
 
     top_bar = ft.Container(
         content=ft.Row([
             ft.Row([
                 ft.Container(content=ft.Text("M", size=16, weight="bold", color="white"), width=32, height=32, bgcolor="#1E1B4B", border_radius=6, alignment=ft.Alignment(0, 0)),
-                ft.Text("MAGADHA", size=16, weight="bold", color="white")
+                ft.Text("MAGADHA", size=16, weight="bold", color="#0F172A")
             ], spacing=6),
             ft.Row([
-                ft.IconButton(icon="support_agent", icon_color="white", icon_size=22, on_click=trigger_help),
+                ft.TextButton(
+                    content=ft.Row([ft.Icon("call", size=14, color="#1E1B4B"), ft.Text("1800-MAGADHA", size=11, weight="bold", color="#1E1B4B")], spacing=2),
+                    on_click=lambda _: toast("Dialing Toll-Free: 1800-MAGADHA")
+                ),
                 profile_circle_btn
             ], spacing=4)
         ], alignment="spaceBetween"),
         padding=12,
-        bgcolor="#111827",
-        border=ft.border.only(bottom=ft.BorderSide(1, "#1F2937"))
+        bgcolor="white",
+        border=ft.border.only(bottom=ft.BorderSide(1, "#CBD5E1"))
     )
 
-    home_screen = ft.Container(
+    page5_home = ft.Container(
         content=ft.Column([top_bar, main_viewport], expand=True, spacing=0),
         expand=True,
         visible=False
     )
 
     # ----------------------------------------------------
-    # VERIFY DETAILS (Post-OTP)
+    # PAGE 4: TERMS & CONDITIONS (EMPTY BOX CLICK TO TICK)
     # ----------------------------------------------------
-    v_name = ft.TextField(label="Full Name", value="Srinidhi", label_style=ft.TextStyle(color="#94A3B8"), bgcolor="#1E293B", color="white", width=310)
-    v_policy = ft.TextField(label="Policy Number", value="MAG-IND-2024-88", label_style=ft.TextStyle(color="#94A3B8"), bgcolor="#1E293B", color="white", width=310)
-    v_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", value="9876543210", label_style=ft.TextStyle(color="#94A3B8"), bgcolor="#1E293B", color="white", width=310)
+    t_checkbox_icon = ft.Icon("check_box_outline_blank", size=24, color="#64748B")
+    login_portal_btn = ft.ElevatedButton("Login & Enter Portal", width=310, height=48, bgcolor="#CBD5E1", color="#94A3B8", disabled=True)
 
-    def on_confirm_verify(e):
-        update_identity(v_name.value)
-        toast("Profile Verified! Entering Portal.")
-        switch_screen("home")
+    def on_toggle_terms(e):
+        terms_checked[0] = not terms_checked[0]
+        if terms_checked[0]:
+            t_checkbox_icon.name = "check_box"
+            t_checkbox_icon.color = "#4F46E5"
+            login_portal_btn.bgcolor = "#1E1B4B"
+            login_portal_btn.color = "white"
+            login_portal_btn.disabled = False
+        else:
+            t_checkbox_icon.name = "check_box_outline_blank"
+            t_checkbox_icon.color = "#64748B"
+            login_portal_btn.bgcolor = "#CBD5E1"
+            login_portal_btn.color = "#94A3B8"
+            login_portal_btn.disabled = True
+        page.update()
 
-    verify_details_card = ft.Container(
-        content=ft.Column([
-            ft.Icon("verified_user", size=38, color="#60A5FA"),
-            ft.Text("Verify Identity", size=17, weight="bold", color="white"),
-            v_name,
-            v_policy,
-            v_mobile,
-            ft.ElevatedButton("Confirm & Proceed", bgcolor="#4F46E5", color="white", width=310, height=45, on_click=on_confirm_verify)
-        ], alignment="center", horizontal_alignment="center", spacing=8),
-        padding=20,
-        border_radius=18,
-        bgcolor="#111827",
-        width=350
+    def on_final_login_click(e):
+        toast(f"Welcome {user_name[0]}! Unlocking Portal.", "#047857")
+        switch_screen("page5")
+
+    login_portal_btn.on_click = on_final_login_click
+
+    page4_terms = ft.Container(
+        content=ft.Container(
+            content=ft.Column([
+                ft.Icon("gavel", size=40, color="#1E1B4B"),
+                ft.Text("Terms & Conditions", size=18, weight="bold", color="#0F172A"),
+                ft.Container(
+                    content=ft.Column([
+                        ft.Text("1. Policy Benefits: Guaranteed settlement for designated nominees.", size=11, color="#334155", weight="w500"),
+                        ft.Text("2. Cashless Admission: 6,500+ networked hospitals nationwide.", size=11, color="#334155", weight="w500"),
+                        ft.Text("3. Data Privacy: 256-bit encryption compliant with IRDAI rules.", size=11, color="#334155", weight="w500"),
+                        ft.Text("4. Claims: Emergency requests audited via Priority Queues.", size=11, color="#334155", weight="w500"),
+                    ], spacing=6),
+                    bgcolor="#F8FAFC",
+                    padding=14,
+                    border_radius=10,
+                    border=ft.border.all(1, "#E2E8F0")
+                ),
+                ft.Container(height=6),
+                ft.GestureDetector(
+                    content=ft.Row([
+                        t_checkbox_icon,
+                        ft.Text("I agree to all policy terms and IRDAI rules", size=12, weight="bold", color="#0F172A")
+                    ], spacing=8),
+                    on_tap=on_toggle_terms
+                ),
+                ft.Container(height=10),
+                login_portal_btn
+            ], alignment="center", horizontal_alignment="center", spacing=10),
+            padding=24,
+            border_radius=18,
+            border=ft.border.all(1.5, "#CBD5E1"),
+            bgcolor="white",
+            width=360
+        ),
+        alignment=ft.Alignment(0, 0),
+        expand=True,
+        visible=False
     )
 
-    verify_details_screen = ft.Container(content=verify_details_card, alignment=ft.Alignment(0, 0), expand=True, visible=False)
+    # ----------------------------------------------------
+    # PAGE 3: POLICY CUSTOMER DETAILS
+    # ----------------------------------------------------
+    p3_name = ft.TextField(label="Customer Full Name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    p3_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2024-88", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    p3_aadhaar = ft.TextField(label="Aadhaar Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="XXXX-XXXX-7892", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    p3_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="9876543210", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+
+    def on_p3_continue(e):
+        if not p3_name.value.strip() or not p3_mobile.value.strip():
+            toast("Please enter all details!", "#B91C1C")
+            return
+        sync_user_data(p3_name.value)
+        switch_screen("page4")
+
+    page3_policy_details = ft.Container(
+        content=ft.Container(
+            content=ft.Column([
+                ft.Icon("verified_user", size=38, color="#1E1B4B"),
+                ft.Text("Customer Policy Schedule", size=18, weight="bold", color="#0F172A"),
+                ft.Text("Confirm your registered identity details", size=11, color="#64748B"),
+                p3_name,
+                p3_policy,
+                p3_aadhaar,
+                p3_mobile,
+                ft.Container(height=4),
+                ft.ElevatedButton("Continue", width=310, height=46, bgcolor="#1E1B4B", color="white", on_click=on_p3_continue)
+            ], alignment="center", horizontal_alignment="center", spacing=8),
+            padding=20,
+            border_radius=18,
+            border=ft.border.all(1.5, "#CBD5E1"),
+            bgcolor="white",
+            width=350
+        ),
+        alignment=ft.Alignment(0, 0),
+        expand=True,
+        visible=False
+    )
 
     # ----------------------------------------------------
-    # OTP SCREEN
+    # PAGE 2: OTP (NUMBERS UP + ROTATING CIRCLE + TICK)
     # ----------------------------------------------------
-    t1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#1E293B", color="white", content_padding=0)
-    t2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#1E293B", color="white", content_padding=0)
-    t3 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#1E293B", color="white", content_padding=0)
-    t4 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#1E293B", color="white", content_padding=0)
+    ot1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
+    ot2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
+    ot3 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
+    ot4 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
 
-    def handle_otp(e, curr, nxt):
+    otp_row_box = ft.Container(
+        content=ft.Row([
+            ft.Container(content=ot1, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
+            ft.Container(content=ot2, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
+            ft.Container(content=ot3, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
+            ft.Container(content=ot4, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
+        ], alignment="center", spacing=10),
+        animate_offset=ft.Animation(400, "easeOut"),
+        offset=ft.transform.Offset(0, 0)
+    )
+
+    rotating_loader = ft.ProgressRing(width=48, height=48, stroke_width=4, color="#4F46E5", visible=False)
+    green_tick = ft.Container(
+        content=ft.Icon("check", size=36, color="white"),
+        width=58,
+        height=58,
+        border_radius=29,
+        bgcolor="#059669",
+        alignment=ft.Alignment(0, 0),
+        scale=0.1,
+        opacity=0.0,
+        animate_scale=ft.Animation(500, "elasticOut"),
+        animate_opacity=ft.Animation(300, "easeIn"),
+        visible=False
+    )
+
+    otp_status_lbl = ft.Text("Enter any 4-digit code sent to mobile", size=12, color="#0F172A", weight="bold", text_align="center")
+
+    def run_otp_success_animation():
+        otp_row_box.offset = ft.transform.Offset(0, -0.2)
+        rotating_loader.visible = True
+        page.update()
+        time.sleep(0.4)
+
+        rotating_loader.visible = False
+        otp_row_box.visible = False
+        green_tick.visible = True
+        green_tick.scale = 1.0
+        green_tick.opacity = 1.0
+        otp_status_lbl.value = "OTP Verified Successfully!"
+        otp_status_lbl.color = "#059669"
+        page.update()
+
+        time.sleep(0.7)
+        switch_screen("page3")
+
+    def handle_otp_step(e, curr, nxt):
         val = curr.value or ""
         if len(val) > 1:
             curr.value = val[-1]
@@ -889,111 +764,193 @@ def main(page: ft.Page):
             if nxt:
                 nxt.focus()
             else:
-                switch_screen("verify_details")
+                code = f"{ot1.value or ''}{ot2.value or ''}{ot3.value or ''}{ot4.value or ''}".strip()
+                if len(code) == 4:
+                    run_otp_success_animation()
 
-    t1.on_change = lambda e: handle_otp(e, t1, t2)
-    t2.on_change = lambda e: handle_otp(e, t2, t3)
-    t3.on_change = lambda e: handle_otp(e, t3, t4)
-    t4.on_change = lambda e: handle_otp(e, t4, None)
+    ot1.on_change = lambda e: handle_otp_step(e, ot1, ot2)
+    ot2.on_change = lambda e: handle_otp_step(e, ot2, ot3)
+    ot3.on_change = lambda e: handle_otp_step(e, ot3, ot4)
+    ot4.on_change = lambda e: handle_otp_step(e, ot4, None)
 
-    otp_card = ft.Container(
-        content=ft.Column([
-            ft.Text("OTP Verification", size=20, weight="bold", color="white"),
-            ft.Text("Enter any 4-digit code", size=12, color="#94A3B8"),
-            ft.Row([ft.Container(t1, width=52), ft.Container(t2, width=52), ft.Container(t3, width=52), ft.Container(t4, width=52)], alignment="center", spacing=10),
-            ft.ElevatedButton("Verify", width=260, height=44, bgcolor="#4F46E5", color="white", on_click=lambda _: switch_screen("verify_details"))
-        ], alignment="center", horizontal_alignment="center", spacing=10),
-        bgcolor="#111827",
-        padding=24,
-        border_radius=18,
-        width=340
+    page2_otp = ft.Container(
+        content=ft.Container(
+            content=ft.Column([
+                ft.Text("OTP Verification", size=20, weight="bold", color="#0F172A"),
+                otp_status_lbl,
+                ft.Container(height=10),
+                ft.Stack([
+                    otp_row_box,
+                    ft.Container(content=rotating_loader, alignment=ft.Alignment(0, 0), height=58),
+                    ft.Container(content=green_tick, alignment=ft.Alignment(0, 0), height=58)
+                ], alignment=ft.Alignment(0, 0)),
+                ft.Container(height=16),
+                ft.ElevatedButton("Verify & Continue", width=280, height=46, bgcolor="#1E1B4B", color="white", on_click=lambda _: run_otp_success_animation()),
+                ft.TextButton("Change Mobile Number", on_click=lambda _: switch_screen("page1"))
+            ], alignment="center", horizontal_alignment="center", spacing=10),
+            bgcolor="white",
+            padding=24,
+            border_radius=18,
+            border=ft.border.all(1.5, "#CBD5E1"),
+            width=350
+        ),
+        alignment=ft.Alignment(0, 0),
+        expand=True,
+        visible=False
     )
 
-    otp_screen = ft.Container(content=otp_card, alignment=ft.Alignment(0, 0), expand=True, visible=False)
-
     # ----------------------------------------------------
-    # LOGIN SCREEN (INSTANT FIRST LETTER AUTO-SYNC)
+    # PAGE 1: LOGIN (MR/MS, NAME, MOBILE)
     # ----------------------------------------------------
-    name_field = ft.TextField(label="Full Name", value="Srinidhi", label_style=ft.TextStyle(color="#94A3B8"), width=210, bgcolor="#1E293B", color="white", border_radius=12)
-    phone_box = ft.TextField(label="Mobile Number", prefix_text="+91 ", value="9876543210", label_style=ft.TextStyle(color="#94A3B8"), width=310, bgcolor="#1E293B", color="white", border_radius=12)
+    title_dropdown = ft.Dropdown(
+        label="Title",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        width=90,
+        options=[ft.dropdown.Option("Mr."), ft.dropdown.Option("Mrs."), ft.dropdown.Option("Ms.")],
+        value="Mr.",
+        bgcolor="#F8FAFC",
+        border_color="#475569",
+        color="#0F172A",
+        border_radius=12
+    )
 
-    def on_name_change(e):
-        entered = name_field.value or ""
-        update_identity(entered)
+    def on_name_type_sync(e):
+        val = (login_name_field.value or "").strip()
+        if val:
+            sync_user_data(val)
 
-    name_field.on_change = on_name_change
+    login_name_field = ft.TextField(
+        label="Full Name",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        value="Srinidhi",
+        hint_text="Enter your full name",
+        width=210,
+        bgcolor="#F8FAFC",
+        border_color="#475569",
+        color="#0F172A",
+        border_radius=12,
+        on_change=on_name_type_sync
+    )
 
-    def on_login(e):
-        if not name_field.value.strip():
+    login_phone_box = ft.TextField(
+        label="Mobile Number",
+        label_style=ft.TextStyle(color="#0F172A", weight="bold"),
+        prefix=ft.Text("+91 ", size=14, weight="bold", color="#0F172A"),
+        value="9876543210",
+        keyboard_type=ft.KeyboardType.PHONE,
+        width=310,
+        bgcolor="#F8FAFC",
+        border_color="#475569",
+        color="#0F172A",
+        border_radius=12
+    )
+
+    def show_permissions_dialog():
+        def on_grant(e):
+            page.dialog.open = False
+            sync_user_data(login_name_field.value)
+            switch_screen("page2")
+
+        page.dialog = ft.AlertDialog(
+            bgcolor="#0F172A",
+            shape=ft.RoundedRectangleBorder(radius=16),
+            title=ft.Row([ft.Icon("security", color="#60A5FA", size=20), ft.Text("App Permissions", size=16, weight="bold", color="white")], spacing=6),
+            content=ft.Container(
+                content=ft.Column([
+                    ft.ListTile(leading=ft.Icon("camera_alt", color="#60A5FA", size=22), title=ft.Text("Camera Permission", size=12, weight="bold", color="white"), subtitle=ft.Text("Instant document scans", size=10, color="#CBD5E1")),
+                    ft.ListTile(leading=ft.Icon("folder", color="#60A5FA", size=22), title=ft.Text("Storage Permission", size=12, weight="bold", color="white"), subtitle=ft.Text("Claim invoices & policy docs", size=10, color="#CBD5E1")),
+                    ft.ListTile(leading=ft.Icon("sms", color="#60A5FA", size=22), title=ft.Text("SMS Access", size=12, weight="bold", color="white"), subtitle=ft.Text("Instant OTP verification", size=10, color="#CBD5E1")),
+                ], tight=True, spacing=2),
+                width=300
+            ),
+            actions=[
+                ft.TextButton(content=ft.Text("Deny", size=12, weight="bold", color="#94A3B8"), on_click=lambda _: setattr(page.dialog, "open", False) or page.update()),
+                ft.ElevatedButton("Allow & Continue", bgcolor="#4F46E5", color="white", on_click=on_grant)
+            ]
+        )
+        page.dialog.open = True
+        page.update()
+
+    def on_get_otp(e):
+        n_val = login_name_field.value.strip()
+        m_val = login_phone_box.value.strip()
+        if not n_val:
             toast("Please enter your name!", "#B91C1C")
             return
-        update_identity(name_field.value)
-        switch_screen("otp")
+        if len(m_val) == 10 and m_val.isdigit():
+            user_salutation[0] = title_dropdown.value or "Mr."
+            current_mobile[0] = m_val
+            p3_mobile.value = m_val
+            show_permissions_dialog()
+        else:
+            toast("Enter valid 10-digit mobile number!", "#B91C1C")
 
-    login_card = ft.Container(
-        content=ft.Column([
-            ft.Container(content=ft.Text("M", size=32, weight="bold", color="white"), width=65, height=65, bgcolor="#4F46E5", border_radius=16, alignment=ft.Alignment(0, 0)),
-            ft.Text("MAGADHA", size=22, weight="bold", color="white"),
-            ft.Text("College Engineering Project Portal", size=12, color="#94A3B8"),
-            name_field,
-            phone_box,
-            ft.ElevatedButton("Get OTP", width=310, height=46, bgcolor="#4F46E5", color="white", on_click=on_login)
-        ], alignment="center", horizontal_alignment="center", spacing=10),
-        padding=24,
-        border_radius=20,
-        bgcolor="#111827",
-        width=350
-    )
-
-    login_screen = ft.Container(content=login_card, alignment=ft.Alignment(0, 0), expand=True, visible=False)
-
-    # Fast Splash
-    splash_screen = ft.Container(
-        content=ft.Column([
-            ft.Container(content=ft.Text("M", size=48, weight="bold", color="white"), width=85, height=85, bgcolor="#4F46E5", border_radius=20, alignment=ft.Alignment(0, 0)),
-            ft.Text("MAGADHA INSURANCE", size=18, weight="bold", color="white")
-        ], alignment="center", horizontal_alignment="center", spacing=12),
+    page1_login = ft.Container(
+        content=ft.Container(
+            content=ft.Column([
+                ft.Container(content=ft.Text("M", size=32, weight="bold", color="white"), width=65, height=65, bgcolor="#1E1B4B", border_radius=16, alignment=ft.Alignment(0, 0)),
+                ft.Text("MAGADHA", size=22, weight="bold", color="#0F172A"),
+                ft.Text("Life & Health Insurance Portal", size=12, color="#334155", weight="bold"),
+                ft.Container(height=4),
+                ft.Row([title_dropdown, login_name_field], width=310, spacing=10),
+                login_phone_box,
+                ft.ElevatedButton("Get OTP", width=310, height=46, bgcolor="#1E1B4B", color="white", on_click=on_get_otp)
+            ], alignment="center", horizontal_alignment="center", spacing=10),
+            padding=24,
+            border_radius=20,
+            border=ft.border.all(1.5, "#CBD5E1"),
+            bgcolor="white",
+            width=350
+        ),
         alignment=ft.Alignment(0, 0),
         expand=True,
         visible=True
     )
 
-    def switch_screen(name):
-        splash_screen.visible = (name == "splash")
-        login_screen.visible = (name == "login")
-        otp_screen.visible = (name == "otp")
-        verify_details_screen.visible = (name == "verify_details")
-        home_screen.visible = (name == "home")
-        vehicle_entry_screen.visible = (name == "vehicle_entry")
-        vehicle_plans_view.visible = (name == "vehicle_plans")
+    def switch_screen(target_name):
+        page1_login.visible = (target_name == "page1")
+        page2_otp.visible = (target_name == "page2")
+        page3_policy_details.visible = (target_name == "page3")
+        page4_terms.visible = (target_name == "page4")
+        page5_home.visible = (target_name == "page5")
+
+        if target_name == "page2":
+            ot1.value = ""
+            ot2.value = ""
+            ot3.value = ""
+            ot4.value = ""
+            otp_row_box.visible = True
+            otp_row_box.offset = ft.transform.Offset(0, 0)
+            rotating_loader.visible = False
+            green_tick.visible = False
+            green_tick.scale = 0.1
+            green_tick.opacity = 0.0
+            otp_status_lbl.value = f"Enter code sent to +91 {current_mobile[0]}"
+            otp_status_lbl.color = "#0F172A"
+            ot1.focus()
+
         page.update()
 
     device_frame = ft.Container(
         content=ft.Stack([
-            splash_screen,
-            login_screen,
-            otp_screen,
-            verify_details_screen,
-            home_screen,
-            vehicle_entry_screen,
-            vehicle_plans_view,
+            page1_login,
+            page2_otp,
+            page3_policy_details,
+            page4_terms,
+            page5_home
         ], expand=True),
         width=440,
         height=880,
-        bgcolor="#0B0F19",
+        bgcolor="#F8FAFC",
         border_radius=18,
         shadow=ft.BoxShadow(blur_radius=20, color="#00000040")
     )
 
     page.add(ft.Row([device_frame], alignment="center"))
 
-    def fast_init():
-        time.sleep(0.3)
-        switch_screen("login")
+    sync_user_data(login_name_field.value)
 
-    threading.Thread(target=fast_init, daemon=True).start()
-
-# Render ASGI Mount
+# Render ASGI Web Server Mount
 app = flet_fastapi.app(main)
 
 if __name__ == "__main__":
