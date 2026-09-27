@@ -140,11 +140,13 @@ def init_db():
 
 init_db()
 
-def get_pure_initial(name_val):
-    if not name_val:
+def extract_first_alpha(text):
+    if not text:
         return "U"
-    cleaned = "".join([c for c in name_val if c.isalpha()])
-    return cleaned[0].upper() if len(cleaned) > 0 else "U"
+    for ch in str(text).strip():
+        if ch.isalpha():
+            return ch.upper()
+    return "U"
 
 def main(page: ft.Page):
     page.title = "Magadha Life & Health Insurance"
@@ -153,21 +155,27 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
-    user_name = [""]
-    user_salutation = ["Mr."]
-    current_policy = ["MAG-IND-2026-99"]
-    current_mobile = [""]
-    current_aadhaar = [""]
-    nominee_info = ["Family Nominee"]
+    # Dynamic State Store
+    user_state = {
+        "name": "",
+        "title": "Mr.",
+        "mobile": "",
+        "aadhaar": "XXXX-XXXX-7892",
+        "policy": "MAG-IND-2026-99",
+        "initial": "U",
+        "nominee": "Family Nominee",
+        "card_side": "life",
+        "terms_agreed": False,
+        "product_type": "Car",
+        "asset_ref": "AP39CD1099",
+        "checkout_plan": "Policy Plan",
+        "checkout_price": 0
+    }
+
     eye_open = [False]
-    card_side = ["life"]
-    terms_checked = [False]
-    selected_product_type = ["Car"]
-    current_asset_ref = ["AP39CD1099"]
-    active_checkout = {"title": "Policy", "price": 0}
 
     def toast(msg, color="#1E1B4B"):
-        snack = ft.SnackBar(ft.Text(msg, color="white", weight="bold"), bgcolor=color)
+        snack = ft.SnackBar(ft.Text(msg, color="white", weight="bold"), bgcolor=color, duration=2000)
         page.overlay.append(snack)
         snack.open = True
         page.update()
@@ -175,17 +183,22 @@ def main(page: ft.Page):
     avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
     user_greeting_txt = ft.Text("Hi User", size=17, weight="bold", color="#0F172A")
     card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
+    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
 
-    def sync_user_data(new_name):
-        c_name = new_name.strip()
-        if c_name:
-            user_name[0] = c_name
-            init_letter = get_pure_initial(c_name)
-            avatar_letter_txt.value = init_letter
-            user_greeting_txt.value = f"Hi {c_name}"
-            card_holder_name_txt.value = c_name.upper()
-            profile_name_txt.value = f"Name: {user_salutation[0]} {c_name}"
-            p3_name.value = c_name
+    # Central Master Name Sync Engine
+    def apply_user_name(raw_input):
+        cleaned = str(raw_input).strip()
+        if not cleaned:
+            return
+        user_state["name"] = cleaned
+        init = extract_first_alpha(cleaned)
+        user_state["initial"] = init
+
+        avatar_letter_txt.value = init
+        user_greeting_txt.value = f"Hi {cleaned}"
+        card_holder_name_txt.value = cleaned.upper()
+        profile_name_txt.value = f"Name: {user_state['title']} {cleaned}"
+        p3_name.value = cleaned
         page.update()
 
     # ----------------------------------------------------
@@ -210,7 +223,7 @@ def main(page: ft.Page):
 
     def resolve_help(query):
         q = query.lower().strip()
-        display_name = user_name[0] if user_name[0] else "Customer"
+        display_name = user_state["name"] if user_state["name"] else "Customer"
         if q in ["hi", "hello", "hey", "help"]:
             return f"Hello {display_name}! I am Magadha AI Support. How can I assist you with your claims, policy renewal, or payment queries today?"
         elif "claim" in q:
@@ -220,7 +233,7 @@ def main(page: ft.Page):
         elif "pay" in q or "upi" in q or "debit" in q or "refund" in q:
             return "All transactions use 256-bit secure gateway. If any amount gets deducted without policy activation, it is auto-reversed within 24 business hours."
         elif "policy" in q or "valid" in q:
-            return f"Your policy {current_policy[0]} is active up to 14 Jan 2027 with Rs. 15 Lakhs coverage and cashless hospitalization."
+            return f"Your policy {user_state['policy']} is active up to 14 Jan 2027 with Rs. 15 Lakhs coverage and cashless hospitalization."
         elif "home" in q or "business" in q or "travel" in q or "cyber" in q:
             return "Tap on Home, Business, Travel, or Cyber Insurance cards on your Home screen to view quotes, select tenure, and complete checkout instantly."
         else:
@@ -234,11 +247,10 @@ def main(page: ft.Page):
         help_input.value = ""
         page.update()
         ans = resolve_help(msg)
-        time.sleep(0.2)
         help_chat_col.controls.append(make_bubble(ans, is_user=False))
         page.update()
 
-    help_chat_col.controls.append(make_bubble("Hello! I am Magadha Help Desk. Please ask any question in English to resolve your issue.", is_user=False))
+    help_chat_col.controls.append(make_bubble("Hello! I am Magadha Help Desk. Ask me any insurance question in English.", is_user=False))
 
     help_sheet = ft.BottomSheet(
         ft.Container(
@@ -274,7 +286,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # REFERENCE VIDEO: DOCK NAVBAR (HOME, CLAIMS, EXPLORE, HISTORY, PROFILE)
+    # REFERENCE VIDEO: DOCK NAVBAR MENU (SLIDING FROM CIRCLE AVATAR)
     # ----------------------------------------------------
     nav_item_active = ["home"]
 
@@ -404,33 +416,20 @@ def main(page: ft.Page):
         border_radius=16,
         bgcolor="#0F172A",
         shadow=ft.BoxShadow(blur_radius=12, color="#02061730"),
-        animate_rotation=ft.Animation(350, "easeInOut"),
+        animate_rotation=ft.Animation(300, "easeInOut"),
         rotate=0
     )
 
-    is_flipping = [False]
-
     def trigger_card_flip(e):
-        if is_flipping[0]:
-            return
-        is_flipping[0] = True
-        virtual_card_container.rotate = math.pi * 0.5
-        page.update()
-        time.sleep(0.18)
-
-        if card_side[0] == "life":
-            card_side[0] = "health"
+        if user_state["card_side"] == "life":
+            user_state["card_side"] = "health"
             virtual_card_container.content = health_card_content
             virtual_card_container.bgcolor = "#064E3B"
         else:
-            card_side[0] = "life"
+            user_state["card_side"] = "life"
             virtual_card_container.content = life_card_content
             virtual_card_container.bgcolor = "#0F172A"
-
-        virtual_card_container.rotate = 0
         page.update()
-        time.sleep(0.18)
-        is_flipping[0] = False
 
     virtual_card_container.on_click = trigger_card_flip
 
@@ -451,14 +450,14 @@ def main(page: ft.Page):
                 ft.Text("POLICY SCHEDULE OVERVIEW", size=11, weight="bold", color="#1E1B4B"),
                 ft.Container(content=ft.Text("ACTIVE", size=9, weight="bold", color="#047857"), bgcolor="#D1FAE5", padding=4, border_radius=4)
             ], alignment="spaceBetween"),
-            ft.Text(f"user policy no : {current_policy[0]}", size=12, color="#0F172A", weight="bold"),
+            ft.Text(f"user policy no : {user_state['policy']}", size=12, color="#0F172A", weight="bold"),
             ft.Row([ft.Row([ft.Text("claim amount :", size=12, color="#1E293B", weight="bold"), amt_label]), eye_btn], alignment="spaceBetween"),
             ft.Divider(height=2, color="#CBD5E1"),
             ft.Text("Death Reason Payout Breakdown:", size=11, weight="bold", color="#0F172A"),
             ft.Row([ft.Text("• Natural Death: Rs. 15,00,000", size=10, color="#1E293B", weight="bold"), ft.Text("• Accident: Rs. 30,00,000", size=10, color="#047857", weight="bold")], alignment="spaceBetween"),
             ft.Text("• Critical Illness: Rs. 20,00,000", size=10, color="#B91C1C", weight="bold"),
             ft.Container(
-                content=ft.Row([ft.Icon("assignment_ind", size=13, color="#1E1B4B"), ft.Text(f"Nominee Guaranteed: {nominee_info[0]} settlement assured.", size=9, weight="bold", color="#1E1B4B")], spacing=4),
+                content=ft.Row([ft.Icon("assignment_ind", size=13, color="#1E1B4B"), ft.Text(f"Nominee Guaranteed: {user_state['nominee']} settlement assured.", size=9, weight="bold", color="#1E1B4B")], spacing=4),
                 bgcolor="#E0E7FF",
                 padding=4,
                 border_radius=4
@@ -471,8 +470,8 @@ def main(page: ft.Page):
     )
 
     action_buttons = ft.Row([
-        ft.ElevatedButton("Life Claim", icon="family_restroom", bgcolor="#312E81", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Min-Heap Priority Queue!")),
-        ft.ElevatedButton("Health Claim", icon="local_hospital", bgcolor="#047857", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Min-Heap Priority Queue!"))
+        ft.ElevatedButton("Life Claim", icon="family_restroom", bgcolor="#312E81", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Priority Queue!")),
+        ft.ElevatedButton("Health Claim", icon="local_hospital", bgcolor="#047857", color="white", height=42, expand=True, on_click=lambda _: toast("Submitted to Priority Queue!"))
     ], spacing=8)
 
     # ----------------------------------------------------
@@ -489,7 +488,7 @@ def main(page: ft.Page):
         conn = sqlite3.connect(DB_FILE)
         c = conn.cursor()
         c.execute("INSERT INTO payment_history VALUES (?, ?, ?, ?, ?, 'Success')",
-                  (new_txn, current_policy[0], active_checkout["title"], datetime.date.today().strftime('%Y-%m-%d'), f"Rs. {active_checkout['price']:,}"))
+                  (new_txn, user_state['policy'], user_state["checkout_plan"], datetime.date.today().strftime('%Y-%m-%d'), f"Rs. {user_state['checkout_price']:,}"))
         conn.commit()
         conn.close()
         toast(f"Payment Successful via {method_name}! Policy Activated.", "#047857")
@@ -544,9 +543,9 @@ def main(page: ft.Page):
     )
 
     def open_payment_gateway(comp_name, cost):
-        active_checkout["title"] = f"{comp_name} ({selected_product_type[0]})"
-        active_checkout["price"] = cost
-        pay_policy_title_lbl.value = active_checkout["title"]
+        user_state["checkout_plan"] = f"{comp_name} ({user_state['product_type']})"
+        user_state["checkout_price"] = cost
+        pay_policy_title_lbl.value = user_state["checkout_plan"]
         pay_policy_amt_lbl.value = f"₹{cost:,}"
         card_number_in.value = ""
         card_expiry_in.value = ""
@@ -554,7 +553,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW (ALL CATEGORIES)[cite: 1]
+    # REFERENCE PHOTO PLAN COMPARISON VIEW
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -670,7 +669,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # DEDICATED INPUT SCREEN (CAR, BIKE, HOME, ETC.)
+    # DEDICATED INPUT SCREEN
     # ----------------------------------------------------
     asset_input_field = ft.TextField(hint_text="e.g. AP39CD1099 / Property ID", text_size=14, bgcolor="#F8FAFC", border_color="#4F46E5", border_radius=10, text_align="center")
     input_screen_title = ft.Text("Enter Vehicle Number", size=17, weight="bold", color="#0F172A")
@@ -681,9 +680,9 @@ def main(page: ft.Page):
         if not val:
             toast("Please enter required identifier!", "#B91C1C")
             return
-        current_asset_ref[0] = val
-        quote_screen_header.value = f"{val} • {selected_product_type[0]} Shield"
-        populate_quote_plans(selected_product_type[0])
+        user_state["asset_ref"] = val
+        quote_screen_header.value = f"{val} • {user_state['product_type']} Shield"
+        populate_quote_plans(user_state["product_type"])
         switch_screen("quote_page")
 
     input_details_screen = ft.Container(
@@ -718,7 +717,7 @@ def main(page: ft.Page):
     )
 
     def trigger_product_flow(p_type):
-        selected_product_type[0] = p_type
+        user_state["product_type"] = p_type
         asset_input_field.value = ""
         if p_type == "Car":
             input_screen_icon.name = "directions_car"
@@ -851,12 +850,11 @@ def main(page: ft.Page):
         history_list_holder
     ], spacing=10, scroll=ft.ScrollMode.AUTO)
 
-    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
     profile_view = ft.Column([
         ft.Text("Customer Profile", size=16, weight="bold", color="#0F172A"),
         profile_name_txt,
-        ft.Text(f"Policy: {current_policy[0]}", color="#4F46E5", weight="bold"),
-        ft.Text(f"Nominee: {nominee_info[0]}", color="#059669", weight="bold"),
+        ft.Text(f"Policy: {user_state['policy']}", color="#4F46E5", weight="bold"),
+        ft.Text(f"Nominee: {user_state['nominee']}", color="#059669", weight="bold"),
         ft.Divider(),
         ft.ElevatedButton("Logout", bgcolor="#FEE2E2", color="#DC2626", width=180, on_click=lambda _: switch_screen("page1")),
     ], spacing=10)
@@ -921,8 +919,8 @@ def main(page: ft.Page):
     login_portal_btn = ft.ElevatedButton("Login & Enter Portal", width=310, height=48, bgcolor="#CBD5E1", color="#94A3B8", disabled=True)
 
     def on_toggle_terms(e):
-        terms_checked[0] = not terms_checked[0]
-        if terms_checked[0]:
+        user_state["terms_agreed"] = not user_state["terms_agreed"]
+        if user_state["terms_agreed"]:
             t_checkbox_btn.icon = "check_box"
             t_checkbox_btn.icon_color = "#4F46E5"
             login_portal_btn.bgcolor = "#1E1B4B"
@@ -939,12 +937,9 @@ def main(page: ft.Page):
     t_checkbox_btn.on_click = on_toggle_terms
 
     def on_final_login_click(e):
-        name_val = user_name[0].strip() if user_name[0].strip() else "User"
-        user_greeting_txt.value = f"Hi {name_val}"
-        avatar_letter_txt.value = get_pure_initial(name_val)
-        card_holder_name_txt.value = name_val.upper()
-        profile_name_txt.value = f"Name: {user_salutation[0]} {name_val}"
-        toast(f"Welcome {name_val}! Unlocking Portal.", "#047857")
+        name_val = user_state["name"] if user_state["name"] else login_name_field.value.strip()
+        apply_user_name(name_val)
+        toast(f"Welcome {user_state['name']}! Unlocking Portal.", "#047857")
         switch_screen("page5")
 
     login_portal_btn.on_click = on_final_login_click
@@ -994,12 +989,13 @@ def main(page: ft.Page):
     p3_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
 
     def on_p3_continue(e):
-        if not p3_name.value.strip() or not p3_mobile.value.strip():
+        val = p3_name.value.strip() if p3_name.value else login_name_field.value.strip()
+        if not val or not p3_mobile.value.strip():
             toast("Please enter all required customer details!", "#B91C1C")
             return
-        current_aadhaar[0] = p3_aadhaar.value.strip()
-        current_mobile[0] = p3_mobile.value.strip()
-        sync_user_data(p3_name.value)
+        user_state["aadhaar"] = p3_aadhaar.value.strip()
+        user_state["mobile"] = p3_mobile.value.strip()
+        apply_user_name(val)
         switch_screen("page4")
 
     page3_policy_details = ft.Container(
@@ -1027,7 +1023,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 2: OTP
+    # PAGE 2: OTP (INSTANT FAST TRANSITION)
     # ----------------------------------------------------
     ot1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
@@ -1035,38 +1031,14 @@ def main(page: ft.Page):
     ot4 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
 
     otp_row_box = ft.Row([ot1, ot2, ot3, ot4], alignment="center", spacing=10)
-
-    rotating_loader = ft.ProgressRing(width=42, height=42, stroke_width=4, color="#4F46E5", visible=False)
-    green_tick = ft.Container(
-        content=ft.Icon("check", size=34, color="white"),
-        width=52,
-        height=52,
-        border_radius=26,
-        bgcolor="#059669",
-        alignment=ft.Alignment(0, 0),
-        visible=False
-    )
-
     otp_status_lbl = ft.Text("Enter any 4-digit code sent to mobile", size=12, color="#0F172A", weight="bold", text_align="center")
 
-    def run_otp_verification_flow():
-        def worker():
-            otp_row_box.visible = False
-            rotating_loader.visible = True
-            otp_status_lbl.value = "Verifying code..."
-            page.update()
-            time.sleep(0.4)
-
-            rotating_loader.visible = False
-            green_tick.visible = True
-            otp_status_lbl.value = "OTP Verified Successfully!"
-            otp_status_lbl.color = "#059669"
-            page.update()
-            time.sleep(0.5)
-
-            switch_screen("page3")
-
-        threading.Thread(target=worker, daemon=True).start()
+    def run_fast_otp_complete():
+        apply_user_name(login_name_field.value)
+        otp_status_lbl.value = "OTP Verified Successfully!"
+        otp_status_lbl.color = "#059669"
+        page.update()
+        switch_screen("page3")
 
     def handle_otp_step(e, curr, nxt):
         val = curr.value or ""
@@ -1079,7 +1051,7 @@ def main(page: ft.Page):
             else:
                 code = f"{ot1.value or ''}{ot2.value or ''}{ot3.value or ''}{ot4.value or ''}".strip()
                 if len(code) == 4:
-                    run_otp_verification_flow()
+                    run_fast_otp_complete()
 
     ot1.on_change = lambda e: handle_otp_step(e, ot1, ot2)
     ot2.on_change = lambda e: handle_otp_step(e, ot2, ot3)
@@ -1087,11 +1059,7 @@ def main(page: ft.Page):
     ot4.on_change = lambda e: handle_otp_step(e, ot4, None)
 
     def on_click_verify_btn(e):
-        code = f"{ot1.value or ''}{ot2.value or ''}{ot3.value or ''}{ot4.value or ''}".strip()
-        if len(code) >= 1:
-            run_otp_verification_flow()
-        else:
-            toast("Please enter OTP code!", "#B91C1C")
+        run_fast_otp_complete()
 
     page2_otp = ft.Container(
         content=ft.Container(
@@ -1099,10 +1067,7 @@ def main(page: ft.Page):
                 ft.Text("OTP Verification", size=20, weight="bold", color="#0F172A"),
                 otp_status_lbl,
                 ft.Container(height=10),
-                ft.Column([
-                    otp_row_box,
-                    ft.Row([rotating_loader, green_tick], alignment="center")
-                ], horizontal_alignment="center", spacing=10),
+                otp_row_box,
                 ft.Container(height=16),
                 ft.ElevatedButton("Verify & Continue", width=280, height=46, bgcolor="#1E1B4B", color="white", on_click=on_click_verify_btn),
                 ft.TextButton("Change Mobile Number", on_click=lambda _: switch_screen("page1"))
@@ -1119,7 +1084,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 1: LOGIN (LIVE NAME SYNC)
+    # PAGE 1: LOGIN
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1133,16 +1098,10 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    def on_login_name_change(e):
-        raw = (login_name_field.value or "").strip()
-        if raw:
-            user_name[0] = raw
-            user_greeting_txt.value = f"Hi {raw}"
-            avatar_letter_txt.value = get_pure_initial(raw)
-            card_holder_name_txt.value = raw.upper()
-            profile_name_txt.value = f"Name: {user_salutation[0]} {raw}"
-            p3_name.value = raw
-            page.update()
+    def on_login_name_type(e):
+        val = (login_name_field.value or "").strip()
+        if val:
+            apply_user_name(val)
 
     login_name_field = ft.TextField(
         label="Full Name",
@@ -1153,7 +1112,7 @@ def main(page: ft.Page):
         border_color="#475569",
         color="#0F172A",
         border_radius=12,
-        on_change=on_login_name_change
+        on_change=on_login_name_type
     )
 
     login_phone_box = ft.TextField(
@@ -1173,11 +1132,7 @@ def main(page: ft.Page):
         def on_grant(e):
             page.dialog.open = False
             raw_n = login_name_field.value.strip()
-            user_name[0] = raw_n
-            user_greeting_txt.value = f"Hi {raw_n}"
-            avatar_letter_txt.value = get_pure_initial(raw_n)
-            card_holder_name_txt.value = raw_n.upper()
-            p3_name.value = raw_n
+            apply_user_name(raw_n)
             p3_mobile.value = login_phone_box.value.strip()
             switch_screen("page2")
 
@@ -1208,12 +1163,9 @@ def main(page: ft.Page):
             toast("Please enter your name!", "#B91C1C")
             return
         if len(m_val) == 10 and m_val.isdigit():
-            user_salutation[0] = title_dropdown.value or "Mr."
-            current_mobile[0] = m_val
-            user_name[0] = n_val
-            user_greeting_txt.value = f"Hi {n_val}"
-            avatar_letter_txt.value = get_pure_initial(n_val)
-            card_holder_name_txt.value = n_val.upper()
+            user_state["title"] = title_dropdown.value or "Mr."
+            user_state["mobile"] = m_val
+            apply_user_name(n_val)
             show_permissions_dialog()
         else:
             toast("Enter valid 10-digit mobile number!", "#B91C1C")
@@ -1258,19 +1210,13 @@ def main(page: ft.Page):
             ot2.value = ""
             ot3.value = ""
             ot4.value = ""
-            otp_row_box.visible = True
-            rotating_loader.visible = False
-            green_tick.visible = False
-            otp_status_lbl.value = f"Enter code sent to +91 {current_mobile[0]}"
+            otp_status_lbl.value = f"Enter code sent to +91 {user_state['mobile']}"
             otp_status_lbl.color = "#0F172A"
             ot1.focus()
 
         if target_name == "page5":
-            name_val = user_name[0].strip() if user_name[0].strip() else "User"
-            user_greeting_txt.value = f"Hi {name_val}"
-            avatar_letter_txt.value = get_pure_initial(name_val)
-            card_holder_name_txt.value = name_val.upper()
-            profile_name_txt.value = f"Name: {user_salutation[0]} {name_val}"
+            name_val = user_state["name"] if user_state["name"] else login_name_field.value.strip()
+            apply_user_name(name_val)
 
         page.update()
 
