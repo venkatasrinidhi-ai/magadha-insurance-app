@@ -153,7 +153,6 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
-    # Completely Clean / Empty Initial State
     user_name = [""]
     user_salutation = ["Mr."]
     current_policy = ["MAG-IND-2026-99"]
@@ -189,7 +188,7 @@ def main(page: ft.Page):
         page.update()
 
     # ----------------------------------------------------
-    # AI ASSISTANT HELP DESK (PROBLEM SOLVER)
+    # AI ASSISTANT HELP DESK
     # ----------------------------------------------------
     help_chat_col = ft.Column(spacing=8, scroll=ft.ScrollMode.AUTO, height=270, auto_scroll=True)
     help_input = ft.TextField(hint_text="Ask about policies, claims, terms, payments...", text_size=12, expand=True, bgcolor="#F8FAFC", border_color="#CBD5E1", color="#0F172A")
@@ -274,7 +273,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # REFERENCE VIDEO: DOCK NAVBAR (HOME, CLAIMS, EXPLORE, HISTORY, PROFILE)
+    # REFERENCE VIDEO: DOCK NAVBAR
     # ----------------------------------------------------
     nav_item_active = ["home"]
 
@@ -476,7 +475,7 @@ def main(page: ft.Page):
     ], spacing=8)
 
     # ----------------------------------------------------
-    # DEDICATED PAYMENT SCREEN (DEBIT/CREDIT & UPI)
+    # DEDICATED PAYMENT SCREEN
     # ----------------------------------------------------
     pay_policy_title_lbl = ft.Text("Policy Plan", size=16, weight="bold", color="#0F172A")
     pay_policy_amt_lbl = ft.Text("₹0", size=22, weight="bold", color="#047857")
@@ -554,7 +553,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW (ALL CATEGORIES)
+    # REFERENCE PHOTO PLAN COMPARISON VIEW (ALL CATEGORIES)[cite: 1]
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -670,7 +669,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # DEDICATED INPUT SCREEN (CAR, BIKE, HOME, BUSINESS, TRAVEL, CYBER)
+    # DEDICATED INPUT SCREEN (CAR, BIKE, HOME, ETC.)
     # ----------------------------------------------------
     asset_input_field = ft.TextField(hint_text="e.g. AP39CD1099 / Property ID", text_size=14, bgcolor="#F8FAFC", border_color="#4F46E5", border_radius=10, text_align="center")
     input_screen_title = ft.Text("Enter Vehicle Number", size=17, weight="bold", color="#0F172A")
@@ -746,16 +745,46 @@ def main(page: ft.Page):
             asset_input_field.hint_text = "e.g. 9876543210@upi"
         switch_screen("input_details")
 
-    big_car_card.on_click = lambda _: trigger_product_flow("Car")
-    big_car_card.content.controls[0].controls[3].on_click = lambda _: trigger_product_flow("Car")
+    big_car_card = ft.Container(
+        content=ft.Row([
+            ft.Column([
+                ft.Container(content=ft.Text("UP TO 85% OFF", size=9, weight="bold", color="white"), bgcolor="#2563EB", padding=ft.padding.symmetric(horizontal=6, vertical=2), border_radius=4),
+                ft.Text("Car Insurance", size=15, weight="bold", color="white"),
+                ft.Text("Cashless repairs in 6500+ garages", size=10, color="#94A3B8"),
+                ft.Container(height=2),
+                ft.ElevatedButton("Get Quotes", bgcolor="white", color="#1E1B4B", height=30, on_click=lambda _: trigger_product_flow("Car"))
+            ], spacing=2, expand=True),
+            ft.Icon("directions_car_filled", size=55, color="#60A5FA")
+        ], alignment="spaceBetween"),
+        padding=14,
+        border_radius=16,
+        bgcolor="#1E1B4B",
+        on_click=lambda _: trigger_product_flow("Car")
+    )
 
-    big_bike_card.on_click = lambda _: trigger_product_flow("Two Wheeler")
-    big_bike_card.content.controls[0].controls[3].on_click = lambda _: trigger_product_flow("Two Wheeler")
+    big_bike_card = ft.Container(
+        content=ft.Row([
+            ft.Column([
+                ft.Container(content=ft.Text("INSTANT POLICY IN 2 MINS", size=9, weight="bold", color="white"), bgcolor="#059669", padding=ft.padding.symmetric(horizontal=6, vertical=2), border_radius=4),
+                ft.Text("Two Wheeler Insurance", size=15, weight="bold", color="white"),
+                ft.Text("Starting @ just ₹715/year", size=10, color="#A7F3D0"),
+                ft.Container(height=2),
+                ft.ElevatedButton("View Plans", bgcolor="white", color="#064E3B", height=30, on_click=lambda _: trigger_product_flow("Two Wheeler"))
+            ], spacing=2, expand=True),
+            ft.Icon("two_wheeler", size=55, color="#34D399")
+        ], alignment="spaceBetween"),
+        padding=14,
+        border_radius=16,
+        bgcolor="#064E3B",
+        on_click=lambda _: trigger_product_flow("Two Wheeler")
+    )
 
-    other_categories_grid.controls[0].on_click = lambda _: trigger_product_flow("Home")
-    other_categories_grid.controls[1].on_click = lambda _: trigger_product_flow("Business")
-    other_categories_grid.controls[2].on_click = lambda _: trigger_product_flow("Travel")
-    other_categories_grid.controls[3].on_click = lambda _: trigger_product_flow("Cyber")
+    other_categories_grid = ft.Row([
+        ft.Container(content=ft.Column([ft.Icon("home", color="#D97706", size=22), ft.Text("Home", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: trigger_product_flow("Home")),
+        ft.Container(content=ft.Column([ft.Icon("store", color="#7C3AED", size=22), ft.Text("Business", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: trigger_product_flow("Business")),
+        ft.Container(content=ft.Column([ft.Icon("flight_takeoff", color="#0891B2", size=22), ft.Text("Travel", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: trigger_product_flow("Travel")),
+        ft.Container(content=ft.Column([ft.Icon("lock", color="#DC2626", size=22), ft.Text("Cyber", size=10, weight="bold", color="#0F172A")], horizontal_alignment="center", spacing=3), bgcolor="white", padding=8, border_radius=12, expand=True, on_click=lambda _: trigger_product_flow("Cyber"))
+    ], spacing=6)
 
     # ----------------------------------------------------
     # TAB CONTENT HOLDERS
@@ -832,26 +861,81 @@ def main(page: ft.Page):
     ], spacing=10)
 
     # ----------------------------------------------------
-    # PAGE 4: TERMS AND CONDITIONS (EMPTY CHECKBOX TICK)
+    # ORIGINAL HOME VIEW LAYOUT
     # ----------------------------------------------------
-    t_checkbox_icon = ft.Icon("check_box_outline_blank", size=24, color="#64748B")
+    home_content_view = ft.Column([
+        user_greeting_txt,
+        virtual_card_container,
+        coverage_detail_box,
+        action_buttons,
+        ft.Container(height=4),
+        ft.Row([ft.Text("Vehicle Protection", size=14, weight="bold", color="#0F172A"), ft.Text("Best Quotes", size=11, weight="bold", color="#2563EB")], alignment="spaceBetween"),
+        big_car_card,
+        big_bike_card,
+        ft.Container(height=2),
+        ft.Text("More Insurance Products", size=13, weight="bold", color="#0F172A"),
+        other_categories_grid,
+        ft.Container(height=4),
+        ft.Text("Live fulfilled", size=15, weight="bold", color="#1E293B", italic=True, text_align="center"),
+        ft.Text("Instant cashless access & Nominee security", size=11, color="#64748B", text_align="center"),
+        ft.Container(height=2),
+        ft.Row([
+            ft.Column([ft.Text("Magadha 24x7 Assistance", size=11, weight="bold", color="#0F172A"), ft.Text("Need instant claims or policy support?", size=10, color="#64748B")], spacing=1),
+            floating_help_pill
+        ], alignment="spaceBetween"),
+        ft.Container(height=20)
+    ], horizontal_alignment="center", spacing=10, scroll=ft.ScrollMode.AUTO)
+
+    main_viewport = ft.Container(content=home_content_view, expand=True, padding=12)
+
+    top_bar = ft.Container(
+        content=ft.Row([
+            ft.Row([
+                ft.Container(content=ft.Text("M", size=16, weight="bold", color="white"), width=32, height=32, bgcolor="#1E1B4B", border_radius=6, alignment=ft.Alignment(0, 0)),
+                ft.Text("MAGADHA", size=16, weight="bold", color="#0F172A")
+            ], spacing=6),
+            ft.Row([
+                ft.TextButton(
+                    content=ft.Row([ft.Icon("call", size=14, color="#1E1B4B"), ft.Text("1800-MAGADHA", size=11, weight="bold", color="#1E1B4B")], spacing=2),
+                    on_click=lambda _: toast("Dialing Toll-Free: 1800-MAGADHA")
+                ),
+                profile_circle_btn
+            ], spacing=4)
+        ], alignment="spaceBetween"),
+        padding=12,
+        bgcolor="white",
+        border=ft.border.only(bottom=ft.BorderSide(1, "#CBD5E1"))
+    )
+
+    page5_home = ft.Container(
+        content=ft.Column([top_bar, main_viewport], expand=True, spacing=0),
+        expand=True,
+        visible=False
+    )
+
+    # ----------------------------------------------------
+    # PAGE 4: TERMS AND CONDITIONS
+    # ----------------------------------------------------
+    t_checkbox_btn = ft.IconButton(icon="check_box_outline_blank", icon_color="#64748B", icon_size=24)
     login_portal_btn = ft.ElevatedButton("Login & Enter Portal", width=310, height=48, bgcolor="#CBD5E1", color="#94A3B8", disabled=True)
 
     def on_toggle_terms(e):
         terms_checked[0] = not terms_checked[0]
         if terms_checked[0]:
-            t_checkbox_icon.name = "check_box"
-            t_checkbox_icon.color = "#4F46E5"
+            t_checkbox_btn.icon = "check_box"
+            t_checkbox_btn.icon_color = "#4F46E5"
             login_portal_btn.bgcolor = "#1E1B4B"
             login_portal_btn.color = "white"
             login_portal_btn.disabled = False
         else:
-            t_checkbox_icon.name = "check_box_outline_blank"
-            t_checkbox_icon.color = "#64748B"
+            t_checkbox_btn.icon = "check_box_outline_blank"
+            t_checkbox_btn.icon_color = "#64748B"
             login_portal_btn.bgcolor = "#CBD5E1"
             login_portal_btn.color = "#94A3B8"
             login_portal_btn.disabled = True
         page.update()
+
+    t_checkbox_btn.on_click = on_toggle_terms
 
     def on_final_login_click(e):
         toast(f"Welcome {user_name[0]}! Unlocking Portal.", "#047857")
@@ -877,13 +961,10 @@ def main(page: ft.Page):
                     border=ft.border.all(1, "#E2E8F0")
                 ),
                 ft.Container(height=6),
-                ft.GestureDetector(
-                    content=ft.Row([
-                        t_checkbox_icon,
-                        ft.Text("I agree to all policy terms and IRDAI rules", size=12, weight="bold", color="#0F172A")
-                    ], spacing=8),
-                    on_tap=on_toggle_terms
-                ),
+                ft.Row([
+                    t_checkbox_btn,
+                    ft.Text("I agree to all policy terms and IRDAI rules", size=12, weight="bold", color="#0F172A")
+                ], spacing=4, alignment="center"),
                 ft.Container(height=10),
                 login_portal_btn
             ], alignment="center", horizontal_alignment="center", spacing=10),
@@ -899,9 +980,9 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 3: POLICY CUSTOMER DETAILS (EMPTY & EDITABLE)
+    # PAGE 3: POLICY CUSTOMER DETAILS
     # ----------------------------------------------------
-    p3_name = ft.TextField(label="Customer Full Name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    p3_name = ft.TextField(label="Customer Full Name", hint_text="Enter full name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2026-99", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_aadhaar = ft.TextField(label="Aadhaar Number", hint_text="12-digit Aadhaar", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
@@ -958,12 +1039,12 @@ def main(page: ft.Page):
         offset=ft.transform.Offset(0, 0)
     )
 
-    rotating_loader = ft.ProgressRing(width=48, height=48, stroke_width=4, color="#4F46E5", visible=False)
+    rotating_loader = ft.ProgressRing(width=44, height=44, stroke_width=4, color="#4F46E5", visible=False)
     green_tick = ft.Container(
-        content=ft.Icon("check", size=36, color="white"),
-        width=58,
-        height=58,
-        border_radius=29,
+        content=ft.Icon("check", size=34, color="white"),
+        width=54,
+        height=54,
+        border_radius=27,
         bgcolor="#059669",
         alignment=ft.Alignment(0, 0),
         scale=0.1,
@@ -1052,6 +1133,11 @@ def main(page: ft.Page):
         border_radius=12
     )
 
+    def on_name_type_sync(e):
+        val = (login_name_field.value or "").strip()
+        if val:
+            sync_user_data(val)
+
     login_name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -1060,7 +1146,8 @@ def main(page: ft.Page):
         bgcolor="#F8FAFC",
         border_color="#475569",
         color="#0F172A",
-        border_radius=12
+        border_radius=12,
+        on_change=on_name_type_sync
     )
 
     login_phone_box = ft.TextField(
@@ -1080,6 +1167,7 @@ def main(page: ft.Page):
         def on_grant(e):
             page.dialog.open = False
             sync_user_data(login_name_field.value)
+            p3_name.value = login_name_field.value.strip()
             p3_mobile.value = login_phone_box.value.strip()
             switch_screen("page2")
 
