@@ -219,7 +219,7 @@ def main(page: ft.Page):
         elif "pay" in q or "upi" in q or "debit" in q or "refund" in q:
             return "All transactions use 256-bit secure gateway. If any amount gets deducted without policy activation, it is auto-reversed within 24 business hours."
         elif "policy" in q or "valid" in q:
-            return f"Your policy {current_policy[0]} is active up to 14 Jan 2027 with Rs. 15,00,000 cashless hospitalization and guaranteed nominee settlement."
+            return f"Your policy {current_policy[0]} is active up to 14 Jan 2027 with Rs. 15 Lakhs coverage and cashless hospitalization."
         elif "home" in q or "business" in q or "travel" in q or "cyber" in q:
             return "Tap on Home, Business, Travel, or Cyber Insurance cards on your Home screen to view quotes, select tenure, and complete checkout instantly."
         else:
@@ -273,7 +273,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # REFERENCE VIDEO: DOCK NAVBAR
+    # REFERENCE VIDEO: DOCK NAVBAR (HOME, CLAIMS, EXPLORE, HISTORY, PROFILE)
     # ----------------------------------------------------
     nav_item_active = ["home"]
 
@@ -1021,76 +1021,71 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 2: OTP (NUMBERS UP + ROTATING CIRCLE + TICK)
+    # PAGE 2: OTP (DIRECT EDITABLE INPUTS & ZERO-BLOCKING BUTTON)
     # ----------------------------------------------------
     ot1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot3 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot4 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
 
-    otp_row_box = ft.Container(
-        content=ft.Row([
-            ft.Container(content=ot1, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
-            ft.Container(content=ot2, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
-            ft.Container(content=ot3, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
-            ft.Container(content=ot4, width=52, height=54, clip_behavior=ft.ClipBehavior.HARD_EDGE),
-        ], alignment="center", spacing=10),
-        animate_offset=ft.Animation(400, "easeOut"),
-        offset=ft.transform.Offset(0, 0)
-    )
+    otp_row_box = ft.Row([ot1, ot2, ot3, ot4], alignment="center", spacing=10)
 
-    rotating_loader = ft.ProgressRing(width=44, height=44, stroke_width=4, color="#4F46E5", visible=False)
+    rotating_loader = ft.ProgressRing(width=42, height=42, stroke_width=4, color="#4F46E5", visible=False)
     green_tick = ft.Container(
         content=ft.Icon("check", size=34, color="white"),
-        width=54,
-        height=54,
-        border_radius=27,
+        width=52,
+        height=52,
+        border_radius=26,
         bgcolor="#059669",
         alignment=ft.Alignment(0, 0),
-        scale=0.1,
-        opacity=0.0,
-        animate_scale=ft.Animation(500, "elasticOut"),
-        animate_opacity=ft.Animation(300, "easeIn"),
         visible=False
     )
 
     otp_status_lbl = ft.Text("Enter any 4-digit code sent to mobile", size=12, color="#0F172A", weight="bold", text_align="center")
 
-    def run_otp_success_animation():
-        otp_row_box.offset = ft.transform.Offset(0, -0.2)
-        rotating_loader.visible = True
-        page.update()
-        time.sleep(0.4)
+    def run_otp_verification_flow():
+        def worker():
+            otp_row_box.visible = False
+            rotating_loader.visible = True
+            otp_status_lbl.value = "Verifying code..."
+            page.update()
+            time.sleep(0.4)
 
-        rotating_loader.visible = False
-        otp_row_box.visible = False
-        green_tick.visible = True
-        green_tick.scale = 1.0
-        green_tick.opacity = 1.0
-        otp_status_lbl.value = "OTP Verified Successfully!"
-        otp_status_lbl.color = "#059669"
-        page.update()
+            rotating_loader.visible = False
+            green_tick.visible = True
+            otp_status_lbl.value = "OTP Verified Successfully!"
+            otp_status_lbl.color = "#059669"
+            page.update()
+            time.sleep(0.5)
 
-        time.sleep(0.7)
-        switch_screen("page3")
+            switch_screen("page3")
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def handle_otp_step(e, curr, nxt):
         val = curr.value or ""
         if len(val) > 1:
             curr.value = val[-1]
-        page.update()
+            page.update()
         if curr.value:
             if nxt:
                 nxt.focus()
             else:
                 code = f"{ot1.value or ''}{ot2.value or ''}{ot3.value or ''}{ot4.value or ''}".strip()
                 if len(code) == 4:
-                    run_otp_success_animation()
+                    run_otp_verification_flow()
 
     ot1.on_change = lambda e: handle_otp_step(e, ot1, ot2)
     ot2.on_change = lambda e: handle_otp_step(e, ot2, ot3)
     ot3.on_change = lambda e: handle_otp_step(e, ot3, ot4)
     ot4.on_change = lambda e: handle_otp_step(e, ot4, None)
+
+    def on_click_verify_btn(e):
+        code = f"{ot1.value or ''}{ot2.value or ''}{ot3.value or ''}{ot4.value or ''}".strip()
+        if len(code) >= 1:
+            run_otp_verification_flow()
+        else:
+            toast("Please enter OTP code!", "#B91C1C")
 
     page2_otp = ft.Container(
         content=ft.Container(
@@ -1098,13 +1093,12 @@ def main(page: ft.Page):
                 ft.Text("OTP Verification", size=20, weight="bold", color="#0F172A"),
                 otp_status_lbl,
                 ft.Container(height=10),
-                ft.Stack([
+                ft.Column([
                     otp_row_box,
-                    ft.Container(content=rotating_loader, alignment=ft.Alignment(0, 0), height=58),
-                    ft.Container(content=green_tick, alignment=ft.Alignment(0, 0), height=58)
-                ], alignment=ft.Alignment(0, 0)),
+                    ft.Row([rotating_loader, green_tick], alignment="center")
+                ], horizontal_alignment="center", spacing=10),
                 ft.Container(height=16),
-                ft.ElevatedButton("Verify & Continue", width=280, height=46, bgcolor="#1E1B4B", color="white", on_click=lambda _: run_otp_success_animation()),
+                ft.ElevatedButton("Verify & Continue", width=280, height=46, bgcolor="#1E1B4B", color="white", on_click=on_click_verify_btn),
                 ft.TextButton("Change Mobile Number", on_click=lambda _: switch_screen("page1"))
             ], alignment="center", horizontal_alignment="center", spacing=10),
             bgcolor="white",
@@ -1119,7 +1113,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 1: LOGIN (EMPTY INITIAL FIELDS)
+    # PAGE 1: LOGIN
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1133,11 +1127,6 @@ def main(page: ft.Page):
         border_radius=12
     )
 
-    def on_name_type_sync(e):
-        val = (login_name_field.value or "").strip()
-        if val:
-            sync_user_data(val)
-
     login_name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -1146,8 +1135,7 @@ def main(page: ft.Page):
         bgcolor="#F8FAFC",
         border_color="#475569",
         color="#0F172A",
-        border_radius=12,
-        on_change=on_name_type_sync
+        border_radius=12
     )
 
     login_phone_box = ft.TextField(
@@ -1245,11 +1233,8 @@ def main(page: ft.Page):
             ot3.value = ""
             ot4.value = ""
             otp_row_box.visible = True
-            otp_row_box.offset = ft.transform.Offset(0, 0)
             rotating_loader.visible = False
             green_tick.visible = False
-            green_tick.scale = 0.1
-            green_tick.opacity = 0.0
             otp_status_lbl.value = f"Enter code sent to +91 {current_mobile[0]}"
             otp_status_lbl.color = "#0F172A"
             ot1.focus()
