@@ -180,7 +180,7 @@ def main(page: ft.Page):
         page.update()
 
     avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi", size=17, weight="bold", color="#0F172A")
+    user_greeting_txt = ft.Text("Hi User", size=17, weight="bold", color="#0F172A")
     card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
     profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
 
@@ -426,12 +426,10 @@ def main(page: ft.Page):
         card_flip_lock[0] = True
 
         def flip_worker():
-            # First half rotate
             virtual_card_container.rotate = math.pi * 0.5
             page.update()
             time.sleep(0.15)
 
-            # Change side content
             if user_state["card_side"] == "life":
                 user_state["card_side"] = "health"
                 virtual_card_container.content = health_card_content
@@ -441,7 +439,6 @@ def main(page: ft.Page):
                 virtual_card_container.content = life_card_content
                 virtual_card_container.bgcolor = "#0F172A"
 
-            # Finish rotate smoothly
             virtual_card_container.rotate = 0
             page.update()
             time.sleep(0.15)
@@ -571,7 +568,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW
+    # REFERENCE PHOTO PLAN COMPARISON VIEW[cite: 1]
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -956,9 +953,15 @@ def main(page: ft.Page):
     t_checkbox_btn.on_click = on_toggle_terms
 
     def on_final_login_click(e):
-        name_val = user_state["name"] if user_state["name"] else login_name_field.value.strip()
-        apply_user_name(name_val)
-        toast(f"Welcome {user_state['name']}! Unlocking Portal.", "#047857")
+        chosen_name = (
+            user_state["name"]
+            if user_state["name"]
+            else (p3_name.value.strip() if p3_name.value else login_name_field.value.strip())
+        )
+        if not chosen_name:
+            chosen_name = "Customer"
+        apply_user_name(chosen_name)
+        toast(f"Welcome {chosen_name}! Unlocking Portal.", "#047857")
         switch_screen("page5")
 
     login_portal_btn.on_click = on_final_login_click
@@ -1053,7 +1056,8 @@ def main(page: ft.Page):
     otp_status_lbl = ft.Text("Enter any 4-digit code sent to mobile", size=12, color="#0F172A", weight="bold", text_align="center")
 
     def run_fast_otp_complete():
-        apply_user_name(login_name_field.value)
+        cur_name = login_name_field.value.strip() if login_name_field.value else user_state["name"]
+        apply_user_name(cur_name)
         otp_status_lbl.value = "OTP Verified Successfully!"
         otp_status_lbl.color = "#059669"
         page.update()
@@ -1208,11 +1212,11 @@ def main(page: ft.Page):
         ),
         alignment=ft.Alignment(0, 0),
         expand=True,
-        visible=False
+        visible=True
     )
 
     # ----------------------------------------------------
-    # SCREEN 0: "M" LOGO ZOOM OPEN EFFECT (RESTORED)
+    # SCREEN 0: "M" LOGO ZOOM OPEN EFFECT
     # ----------------------------------------------------
     m_char = ft.Text("M", size=55, weight="bold", color="white")
     m_zoom_box = ft.Container(
@@ -1270,9 +1274,15 @@ def main(page: ft.Page):
             otp_status_lbl.color = "#0F172A"
             ot1.focus()
 
-        if target_name == "page5":
-            name_val = user_state["name"] if user_state["name"] else login_name_field.value.strip()
-            apply_user_name(name_val)
+        if target_name in ["page3", "page4", "page5"]:
+            chosen_name = (
+                user_state["name"]
+                if user_state["name"]
+                else (p3_name.value.strip() if p3_name.value else login_name_field.value.strip())
+            )
+            if not chosen_name:
+                chosen_name = "Customer"
+            apply_user_name(chosen_name)
 
         page.update()
 
