@@ -185,6 +185,7 @@ def main(page: ft.Page):
             user_greeting_txt.value = f"Hi {c_name}"
             card_holder_name_txt.value = c_name.upper()
             profile_name_txt.value = f"Name: {user_salutation[0]} {c_name}"
+            p3_name.value = c_name
         page.update()
 
     # ----------------------------------------------------
@@ -938,7 +939,12 @@ def main(page: ft.Page):
     t_checkbox_btn.on_click = on_toggle_terms
 
     def on_final_login_click(e):
-        toast(f"Welcome {user_name[0]}! Unlocking Portal.", "#047857")
+        name_val = user_name[0].strip() if user_name[0].strip() else "User"
+        user_greeting_txt.value = f"Hi {name_val}"
+        avatar_letter_txt.value = get_pure_initial(name_val)
+        card_holder_name_txt.value = name_val.upper()
+        profile_name_txt.value = f"Name: {user_salutation[0]} {name_val}"
+        toast(f"Welcome {name_val}! Unlocking Portal.", "#047857")
         switch_screen("page5")
 
     login_portal_btn.on_click = on_final_login_click
@@ -1021,7 +1027,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 2: OTP (DIRECT EDITABLE INPUTS & ZERO-BLOCKING BUTTON)
+    # PAGE 2: OTP
     # ----------------------------------------------------
     ot1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
@@ -1113,7 +1119,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 1: LOGIN
+    # PAGE 1: LOGIN (LIVE NAME SYNC)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1127,6 +1133,17 @@ def main(page: ft.Page):
         border_radius=12
     )
 
+    def on_login_name_change(e):
+        raw = (login_name_field.value or "").strip()
+        if raw:
+            user_name[0] = raw
+            user_greeting_txt.value = f"Hi {raw}"
+            avatar_letter_txt.value = get_pure_initial(raw)
+            card_holder_name_txt.value = raw.upper()
+            profile_name_txt.value = f"Name: {user_salutation[0]} {raw}"
+            p3_name.value = raw
+            page.update()
+
     login_name_field = ft.TextField(
         label="Full Name",
         label_style=ft.TextStyle(color="#0F172A", weight="bold"),
@@ -1135,7 +1152,8 @@ def main(page: ft.Page):
         bgcolor="#F8FAFC",
         border_color="#475569",
         color="#0F172A",
-        border_radius=12
+        border_radius=12,
+        on_change=on_login_name_change
     )
 
     login_phone_box = ft.TextField(
@@ -1154,8 +1172,12 @@ def main(page: ft.Page):
     def show_permissions_dialog():
         def on_grant(e):
             page.dialog.open = False
-            sync_user_data(login_name_field.value)
-            p3_name.value = login_name_field.value.strip()
+            raw_n = login_name_field.value.strip()
+            user_name[0] = raw_n
+            user_greeting_txt.value = f"Hi {raw_n}"
+            avatar_letter_txt.value = get_pure_initial(raw_n)
+            card_holder_name_txt.value = raw_n.upper()
+            p3_name.value = raw_n
             p3_mobile.value = login_phone_box.value.strip()
             switch_screen("page2")
 
@@ -1188,6 +1210,10 @@ def main(page: ft.Page):
         if len(m_val) == 10 and m_val.isdigit():
             user_salutation[0] = title_dropdown.value or "Mr."
             current_mobile[0] = m_val
+            user_name[0] = n_val
+            user_greeting_txt.value = f"Hi {n_val}"
+            avatar_letter_txt.value = get_pure_initial(n_val)
+            card_holder_name_txt.value = n_val.upper()
             show_permissions_dialog()
         else:
             toast("Enter valid 10-digit mobile number!", "#B91C1C")
@@ -1238,6 +1264,13 @@ def main(page: ft.Page):
             otp_status_lbl.value = f"Enter code sent to +91 {current_mobile[0]}"
             otp_status_lbl.color = "#0F172A"
             ot1.focus()
+
+        if target_name == "page5":
+            name_val = user_name[0].strip() if user_name[0].strip() else "User"
+            user_greeting_txt.value = f"Hi {name_val}"
+            avatar_letter_txt.value = get_pure_initial(name_val)
+            card_holder_name_txt.value = name_val.upper()
+            profile_name_txt.value = f"Name: {user_salutation[0]} {name_val}"
 
         page.update()
 
