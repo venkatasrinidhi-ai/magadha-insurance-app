@@ -155,7 +155,6 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
-    # Dynamic State Store
     user_state = {
         "name": "",
         "title": "Mr.",
@@ -185,7 +184,6 @@ def main(page: ft.Page):
     card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
     profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
 
-    # Central Master Name Sync Engine
     def apply_user_name(raw_input):
         cleaned = str(raw_input).strip()
         if not cleaned:
@@ -286,7 +284,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # REFERENCE VIDEO: DOCK NAVBAR MENU (SLIDING FROM CIRCLE AVATAR)
+    # REFERENCE VIDEO: DOCK NAVBAR MENU
     # ----------------------------------------------------
     nav_item_active = ["home"]
 
@@ -374,7 +372,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (3D HORIZONTAL ROTATE PASS)
+    # VIRTUAL CARD (3D PASS)
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
@@ -553,7 +551,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW
+    # REFERENCE PHOTO PLAN COMPARISON VIEW[cite: 1]
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -854,6 +852,7 @@ def main(page: ft.Page):
         ft.Text("Customer Profile", size=16, weight="bold", color="#0F172A"),
         profile_name_txt,
         ft.Text(f"Policy: {user_state['policy']}", color="#4F46E5", weight="bold"),
+        ft.Text(f"Aadhaar: {user_state['aadhaar']}", color="#0F172A", weight="bold"),
         ft.Text(f"Nominee: {user_state['nominee']}", color="#059669", weight="bold"),
         ft.Divider(),
         ft.ElevatedButton("Logout", bgcolor="#FEE2E2", color="#DC2626", width=180, on_click=lambda _: switch_screen("page1")),
@@ -981,11 +980,11 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 3: POLICY CUSTOMER DETAILS
+    # PAGE 3: POLICY CUSTOMER DETAILS (SAMPLE AADHAAR VALUE PRESET)
     # ----------------------------------------------------
     p3_name = ft.TextField(label="Customer Full Name", hint_text="Enter full name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2026-99", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
-    p3_aadhaar = ft.TextField(label="Aadhaar Number", hint_text="12-digit Aadhaar", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
+    p3_aadhaar = ft.TextField(label="Aadhaar Number", value="XXXX-XXXX-7892", hint_text="XXXX-XXXX-7892", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
 
     def on_p3_continue(e):
@@ -993,7 +992,7 @@ def main(page: ft.Page):
         if not val or not p3_mobile.value.strip():
             toast("Please enter all required customer details!", "#B91C1C")
             return
-        user_state["aadhaar"] = p3_aadhaar.value.strip()
+        user_state["aadhaar"] = p3_aadhaar.value.strip() if p3_aadhaar.value.strip() else "XXXX-XXXX-7892"
         user_state["mobile"] = p3_mobile.value.strip()
         apply_user_name(val)
         switch_screen("page4")
@@ -1023,7 +1022,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 2: OTP (INSTANT FAST TRANSITION)
+    # PAGE 2: OTP
     # ----------------------------------------------------
     ot1 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
     ot2 = ft.TextField(width=52, height=54, text_align="center", text_size=20, keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", content_padding=0)
