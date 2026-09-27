@@ -142,11 +142,11 @@ init_db()
 
 def extract_first_alpha(text):
     if not text:
-        return "U"
+        return ""
     for ch in str(text).strip():
         if ch.isalpha():
             return ch.upper()
-    return "U"
+    return ""
 
 def main(page: ft.Page):
     page.title = "Magadha Life & Health Insurance"
@@ -155,13 +155,14 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "start"
 
+    # Strictly Clean State (No 'User' defaults)
     user_state = {
         "name": "",
         "title": "Mr.",
         "mobile": "",
         "aadhaar": "XXXX-XXXX-7892",
         "policy": "MAG-IND-2026-99",
-        "initial": "U",
+        "initial": "",
         "nominee": "Family Nominee",
         "card_side": "life",
         "terms_agreed": False,
@@ -179,24 +180,29 @@ def main(page: ft.Page):
         snack.open = True
         page.update()
 
-    avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi User", size=17, weight="bold", color="#0F172A")
-    card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
-    profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
+    avatar_letter_txt = ft.Text("", size=18, weight="bold", color="white")
+    user_greeting_txt = ft.Text("", size=17, weight="bold", color="#0F172A")
+    card_holder_name_txt = ft.Text("", size=11, weight="bold", color="white")
+    profile_name_txt = ft.Text("", size=13, weight="bold", color="#0F172A")
 
+    # Pure User Name Sync Mechanism
     def apply_user_name(raw_input):
         cleaned = str(raw_input).strip()
-        if not cleaned:
-            return
-        user_state["name"] = cleaned
-        init = extract_first_alpha(cleaned)
-        user_state["initial"] = init
+        if cleaned:
+            user_state["name"] = cleaned
+            init = extract_first_alpha(cleaned)
+            user_state["initial"] = init
 
-        avatar_letter_txt.value = init
-        user_greeting_txt.value = f"Hi {cleaned}"
-        card_holder_name_txt.value = cleaned.upper()
-        profile_name_txt.value = f"Name: {user_state['title']} {cleaned}"
-        p3_name.value = cleaned
+            avatar_letter_txt.value = init
+            user_greeting_txt.value = f"Hi {cleaned}"
+            card_holder_name_txt.value = cleaned.upper()
+            profile_name_txt.value = f"Name: {user_state['title']} {cleaned}"
+            p3_name.value = cleaned
+        else:
+            avatar_letter_txt.value = ""
+            user_greeting_txt.value = "Hi"
+            card_holder_name_txt.value = ""
+            profile_name_txt.value = ""
         page.update()
 
     # ----------------------------------------------------
@@ -221,7 +227,7 @@ def main(page: ft.Page):
 
     def resolve_help(query):
         q = query.lower().strip()
-        display_name = user_state["name"] if user_state["name"] else "Customer"
+        display_name = user_state["name"] if user_state["name"] else "Member"
         if q in ["hi", "hello", "hey", "help"]:
             return f"Hello {display_name}! I am Magadha AI Support. How can I assist you with your claims, policy renewal, or payment queries today?"
         elif "claim" in q:
@@ -372,7 +378,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (3D ROTATING PASS CONTAINER)
+    # VIRTUAL CARD (3D HORIZONTAL ROTATE PASS)
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
@@ -568,7 +574,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW[cite: 1]
+    # REFERENCE PHOTO PLAN COMPARISON VIEW
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -953,15 +959,11 @@ def main(page: ft.Page):
     t_checkbox_btn.on_click = on_toggle_terms
 
     def on_final_login_click(e):
-        chosen_name = (
-            user_state["name"]
-            if user_state["name"]
-            else (p3_name.value.strip() if p3_name.value else login_name_field.value.strip())
-        )
-        if not chosen_name:
-            chosen_name = "Customer"
-        apply_user_name(chosen_name)
-        toast(f"Welcome {chosen_name}! Unlocking Portal.", "#047857")
+        name_val = user_state["name"]
+        if not name_val:
+            name_val = p3_name.value.strip() if p3_name.value else login_name_field.value.strip()
+        apply_user_name(name_val)
+        toast(f"Welcome {user_state['name']}! Unlocking Portal.", "#047857")
         switch_screen("page5")
 
     login_portal_btn.on_click = on_final_login_click
@@ -1011,7 +1013,7 @@ def main(page: ft.Page):
     p3_mobile = ft.TextField(label="Mobile Number", prefix_text="+91 ", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
 
     def on_p3_continue(e):
-        val = p3_name.value.strip() if p3_name.value else login_name_field.value.strip()
+        val = p3_name.value.strip() if p3_name.value else (login_name_field.value.strip() if login_name_field.value else user_state["name"])
         if not val or not p3_mobile.value.strip():
             toast("Please enter all required customer details!", "#B91C1C")
             return
@@ -1212,7 +1214,7 @@ def main(page: ft.Page):
         ),
         alignment=ft.Alignment(0, 0),
         expand=True,
-        visible=True
+        visible=False
     )
 
     # ----------------------------------------------------
@@ -1274,15 +1276,12 @@ def main(page: ft.Page):
             otp_status_lbl.color = "#0F172A"
             ot1.focus()
 
-        if target_name in ["page3", "page4", "page5"]:
-            chosen_name = (
-                user_state["name"]
-                if user_state["name"]
-                else (p3_name.value.strip() if p3_name.value else login_name_field.value.strip())
-            )
-            if not chosen_name:
-                chosen_name = "Customer"
-            apply_user_name(chosen_name)
+        # Enforce exact user name whenever arriving at Page 5
+        if target_name == "page5":
+            name_val = user_state["name"]
+            if not name_val:
+                name_val = p3_name.value.strip() if p3_name.value else login_name_field.value.strip()
+            apply_user_name(name_val)
 
         page.update()
 
