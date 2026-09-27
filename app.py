@@ -180,7 +180,7 @@ def main(page: ft.Page):
         page.update()
 
     avatar_letter_txt = ft.Text("U", size=18, weight="bold", color="white")
-    user_greeting_txt = ft.Text("Hi User", size=17, weight="bold", color="#0F172A")
+    user_greeting_txt = ft.Text("Hi", size=17, weight="bold", color="#0F172A")
     card_holder_name_txt = ft.Text("VALUED CUSTOMER", size=11, weight="bold", color="white")
     profile_name_txt = ft.Text("Name: User", size=13, weight="bold", color="#0F172A")
 
@@ -372,7 +372,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # VIRTUAL CARD (3D PASS)
+    # VIRTUAL CARD (3D ROTATING PASS CONTAINER)
     # ----------------------------------------------------
     life_card_content = ft.Column([
         ft.Row([
@@ -418,16 +418,36 @@ def main(page: ft.Page):
         rotate=0
     )
 
+    card_flip_lock = [False]
+
     def trigger_card_flip(e):
-        if user_state["card_side"] == "life":
-            user_state["card_side"] = "health"
-            virtual_card_container.content = health_card_content
-            virtual_card_container.bgcolor = "#064E3B"
-        else:
-            user_state["card_side"] = "life"
-            virtual_card_container.content = life_card_content
-            virtual_card_container.bgcolor = "#0F172A"
-        page.update()
+        if card_flip_lock[0]:
+            return
+        card_flip_lock[0] = True
+
+        def flip_worker():
+            # First half rotate
+            virtual_card_container.rotate = math.pi * 0.5
+            page.update()
+            time.sleep(0.15)
+
+            # Change side content
+            if user_state["card_side"] == "life":
+                user_state["card_side"] = "health"
+                virtual_card_container.content = health_card_content
+                virtual_card_container.bgcolor = "#064E3B"
+            else:
+                user_state["card_side"] = "life"
+                virtual_card_container.content = life_card_content
+                virtual_card_container.bgcolor = "#0F172A"
+
+            # Finish rotate smoothly
+            virtual_card_container.rotate = 0
+            page.update()
+            time.sleep(0.15)
+            card_flip_lock[0] = False
+
+        threading.Thread(target=flip_worker, daemon=True).start()
 
     virtual_card_container.on_click = trigger_card_flip
 
@@ -551,7 +571,7 @@ def main(page: ft.Page):
         switch_screen("payment_page")
 
     # ----------------------------------------------------
-    # REFERENCE PHOTO PLAN COMPARISON VIEW[cite: 1]
+    # REFERENCE PHOTO PLAN COMPARISON VIEW
     # ----------------------------------------------------
     quote_screen_header = ft.Text("Plan Details", size=12, weight="bold", color="#CBD5E1")
     pa_cover_switch = ft.Switch(value=True, active_color="#4F46E5")
@@ -980,7 +1000,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 3: POLICY CUSTOMER DETAILS (SAMPLE AADHAAR VALUE PRESET)
+    # PAGE 3: POLICY CUSTOMER DETAILS
     # ----------------------------------------------------
     p3_name = ft.TextField(label="Customer Full Name", hint_text="Enter full name", label_style=ft.TextStyle(color="#0F172A", weight="bold"), bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
     p3_policy = ft.TextField(label="Policy Number", label_style=ft.TextStyle(color="#0F172A", weight="bold"), value="MAG-IND-2026-99", bgcolor="#F8FAFC", border_color="#475569", color="#0F172A", text_size=14, width=310)
@@ -1083,7 +1103,7 @@ def main(page: ft.Page):
     )
 
     # ----------------------------------------------------
-    # PAGE 1: LOGIN
+    # PAGE 1: LOGIN (LIVE NAME SYNC)
     # ----------------------------------------------------
     title_dropdown = ft.Dropdown(
         label="Title",
@@ -1188,13 +1208,50 @@ def main(page: ft.Page):
         ),
         alignment=ft.Alignment(0, 0),
         expand=True,
+        visible=False
+    )
+
+    # ----------------------------------------------------
+    # SCREEN 0: "M" LOGO ZOOM OPEN EFFECT (RESTORED)
+    # ----------------------------------------------------
+    m_char = ft.Text("M", size=55, weight="bold", color="white")
+    m_zoom_box = ft.Container(
+        content=m_char,
+        width=90,
+        height=90,
+        bgcolor="#1E1B4B",
+        border_radius=22,
+        alignment=ft.Alignment(0, 0),
+        animate=ft.Animation(700, "easeInCubic"),
+        animate_opacity=ft.Animation(500, "easeIn")
+    )
+
+    splash_screen = ft.Container(
+        content=ft.Column([
+            m_zoom_box,
+            ft.Text("MAGADHA INSURANCE", size=18, weight="bold", color="#0F172A")
+        ], alignment="center", horizontal_alignment="center", spacing=14),
+        alignment=ft.Alignment(0, 0),
+        expand=True,
         visible=True
     )
+
+    def run_splash_zoom_sequence():
+        time.sleep(0.4)
+        m_zoom_box.width = 900
+        m_zoom_box.height = 900
+        m_zoom_box.border_radius = 450
+        m_char.size = 320
+        m_zoom_box.opacity = 0.0
+        page.update()
+        time.sleep(0.6)
+        switch_screen("page1")
 
     # ----------------------------------------------------
     # SCREEN SWITCHER LOGIC
     # ----------------------------------------------------
     def switch_screen(target_name):
+        splash_screen.visible = (target_name == "splash")
         page1_login.visible = (target_name == "page1")
         page2_otp.visible = (target_name == "page2")
         page3_policy_details.visible = (target_name == "page3")
@@ -1221,6 +1278,7 @@ def main(page: ft.Page):
 
     device_frame = ft.Container(
         content=ft.Stack([
+            splash_screen,
             page1_login,
             page2_otp,
             page3_policy_details,
@@ -1255,6 +1313,8 @@ def main(page: ft.Page):
     adapt_layout()
 
     page.add(ft.Row([device_frame], alignment="center"))
+
+    threading.Thread(target=run_splash_zoom_sequence, daemon=True).start()
 
 # Render ASGI Mount
 app = flet_fastapi.app(main)
